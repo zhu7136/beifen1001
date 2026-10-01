@@ -1,0 +1,12 @@
+{
+  "name": "limx-rl-lab",
+  "version": "1.0.0",
+  "description": "LimX RL Lab",
+  "type": "module",
+  "bin": {
+    "claude": "@anthropic-ai/claude-code"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-code": "^1.0.128"
+  }
+}
