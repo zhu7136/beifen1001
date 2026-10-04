@@ -110,6 +110,10 @@ def main(argv=None):
     env_cfg.seed = args.seed
     env_cfg.sim.device = getattr(args, "device", "cuda:0")
 
+    # Deterministic evaluation: disable training-time disturbances.
+    env_cfg.observations.policy.enable_corruption = False
+    env_cfg.events.push_robot = None
+
     agent_cfg = load_cfg_from_registry(args.task, "rsl_rl_cfg_entry_point")
     resume_path = retrieve_file_path(args.checkpoint)
 
@@ -183,19 +187,48 @@ def main(argv=None):
     simulation_app.close()
 
 
-def _eval_one_speed(env, policy, cmd_term, robot, device, target_speed_mps, seed, global_seed, mass):
-    """Run episodes at a fixed forward command for one seed; return RunMetrics."""
+def _eval_one_speed(
+    env,
+    policy,
+    cmd_term,
+    robot,
+    device,
+    target_speed_mps,
+    seed,
+    global_seed,
+    mass,
+):
+    """Run one independent fixed-speed evaluation."""
     import torch
 
     from limx_rl_lab.utils.velocity_eval import compute_run_metrics
 
-    cmd_term.cfg.ranges.lin_vel_x = (float(target_speed_mps), float(target_speed_mps))
+    run_seed = global_seed + seed
+    torch.manual_seed(run_seed)
+
+    # Seed the Isaac environment when supported.
+    if hasattr(env.unwrapped, "seed"):
+        env.unwrapped.seed(run_seed)
+
+    # Set fixed command before reset so reset-time resampling uses it.
+    cmd_term.cfg.ranges.lin_vel_x = (
+        float(target_speed_mps),
+        float(target_speed_mps),
+    )
     cmd_term.cfg.ranges.lin_vel_y = (0.0, 0.0)
     cmd_term.cfg.ranges.ang_vel_z = (0.0, 0.0)
     cmd_term.cfg.rel_standing_envs = 0.0
-    # force resample (parent expects a sequence of env ids, not a slice)
-    cmd_term._resample_command(list(range(env.unwrapped.num_envs)))
 
+    # Important: do not inherit the previous speed/seed state.
+    reset_result = env.reset()
+    obs = reset_result[0] if isinstance(reset_result, tuple) else reset_result
+
+    # Ensure all environments received the exact fixed command.
+    cmd_term._resample_command(
+        list(range(env.unwrapped.num_envs))
+    )
+
+    # Refresh observations after command resampling.
     obs = env.get_observations()
     if isinstance(obs, tuple):
         obs = obs[0]
@@ -219,8 +252,6 @@ def _eval_one_speed(env, policy, cmd_term, robot, device, target_speed_mps, seed
     base_contact = torch.zeros(num_envs, dtype=torch.bool, device=device)
     base_height = torch.zeros(num_envs, dtype=torch.bool, device=device)
     episodes_done = torch.zeros(num_envs, dtype=torch.long, device=device)
-
-    torch.manual_seed(global_seed + seed)
 
     max_steps = episode_len + 5
     for _ in range(max_steps):
