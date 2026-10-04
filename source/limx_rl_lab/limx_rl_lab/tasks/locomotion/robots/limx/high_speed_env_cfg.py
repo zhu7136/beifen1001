@@ -90,6 +90,29 @@ class RobotHighSpeedEnvCfg(RobotEnvCfg):
             self.commands.base_velocity.mid_frac = float(os.environ["LIMX_HS_MID_FRAC"])
         if "LIMX_HS_LOW_FRAC" in os.environ:
             self.commands.base_velocity.low_frac = float(os.environ["LIMX_HS_LOW_FRAC"])
+        if "LIMX_HS_SPEED_RMSE_MAX" in os.environ:
+            hs.speed_rmse_max_mps = float(os.environ["LIMX_HS_SPEED_RMSE_MAX"])
+        if "LIMX_HS_SATURATION_RATE_MAX" in os.environ:
+            hs.saturation_rate_max = float(os.environ["LIMX_HS_SATURATION_RATE_MAX"])
+
+        # Dynamic gait period parameters
+        gait_period_start = float(os.getenv("LIMX_HS_GAIT_PERIOD_START", "0.72"))
+        gait_period_end = float(os.getenv("LIMX_HS_GAIT_PERIOD_END", "0.60"))
+        gait_speed_start = float(os.getenv("LIMX_HS_GAIT_SPEED_START", "2.0"))
+        gait_speed_end = float(os.getenv("LIMX_HS_GAIT_SPEED_END", "2.8"))
+
+        dynamic_gait = {
+            "period": gait_period_start,
+            "period_start": gait_period_start,
+            "period_end": gait_period_end,
+            "speed_start": gait_speed_start,
+            "speed_end": gait_speed_end,
+        }
+
+        self.observations.policy.gait_phase.params.update(dynamic_gait)
+        self.observations.critic.gait_phase.params.update(dynamic_gait)
+        self.rewards.gait.params.update(dynamic_gait)
+        self.rewards.cross_arm_swing_stance.params.update(dynamic_gait)
 
 
 @configclass

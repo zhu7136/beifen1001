@@ -218,6 +218,10 @@ def cross_arm_swing_stance(
     command_name: str = "base_velocity",
     command_threshold: float = 0.1,
     position_scale: float = 8.0,
+    period_start: float = 0.72,
+    period_end: float = 0.60,
+    speed_start: float = 2.0,
+    speed_end: float = 2.8,
 ) -> torch.Tensor:
     """Reward contralateral arm swing from the default pose using gait phase."""
     if not hasattr(env, "episode_length_buf"):
@@ -249,7 +253,18 @@ def cross_arm_swing_stance(
     left_hand_delta_x = hand_delta_x[:, 0]
     right_hand_delta_x = hand_delta_x[:, 1]
 
-    phase_signal = gait_phase_obs(env, period=period)[:, 0]
+    # Compute dynamic period
+    command = env.command_manager.get_command("base_velocity")
+    command_speed = command[:, 0].abs()
+    
+    alpha = torch.clamp(
+        (command_speed - speed_start) / max(speed_end - speed_start, 1.0e-6),
+        0.0,
+        1.0,
+    )
+    current_period = period_start + alpha * (period_end - period_start)
+    
+    phase_signal = gait_phase_obs(env, period=current_period)[:, 0]
 
     # left stance  -> right hand forward, left hand backward
     # right stance -> left hand forward, right hand backward
@@ -288,11 +303,26 @@ def feet_gait(
     threshold: float = 0.5,
     command_name=None,
     command_threshold: float = 0.1,
+    period_start: float = 0.72,
+    period_end: float = 0.60,
+    speed_start: float = 2.0,
+    speed_end: float = 2.8,
 ) -> torch.Tensor:
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
     is_contact = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids] > 0
 
-    global_phase = ((env.episode_length_buf * env.step_dt) % period / period).unsqueeze(1)
+    # Compute dynamic period based on command speed
+    command = env.command_manager.get_command("base_velocity")
+    command_speed = command[:, 0].abs()
+    
+    alpha = torch.clamp(
+        (command_speed - speed_start) / max(speed_end - speed_start, 1.0e-6),
+        0.0,
+        1.0,
+    )
+    current_period = period_start + alpha * (period_end - period_start)
+    
+    global_phase = ((env.episode_length_buf * env.step_dt) % current_period / current_period).unsqueeze(1)
     phases = []
     for offset_ in offset:
         phase = (global_phase + offset_) % 1.0
