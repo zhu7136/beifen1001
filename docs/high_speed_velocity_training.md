@@ -2,16 +2,43 @@
 
 Authoritative acceptance metric for high-speed capability is **fixed-speed evaluation**, not mixed `Train/mean_reward`.
 
+## 0. From-scratch Flat 2.8 m/s (recommended path)
+
+Change: `flat-velocity-from-scratch-2p8`. Abandons resume-based HS curriculum for this goal.
+
+Flat `CommandsCfg` now uses fixed command envelope:
+
+- `ranges.lin_vel_x = (0.0, 2.8)`
+- `limit_ranges.lin_vel_x = (0.0, 2.8)`
+- `lin_vel_y = (-0.05, 0.05)`, `ang_vel_z = (-0.25, 0.25)` on both ranges and limits
+
+Agent: `BasePPORunnerCfg` (LR `1e-3`, noise `1.0`, `save_interval=100`). Do **not** pass `--init_checkpoint` / `--resume`. Do **not** use `LimX-HU-D04-01-Flat-Velocity-HS` for this path.
+
+```bash
+export WANDB_API_KEY=your_key
+tmux new -s flat28
+
+python scripts/rsl_rl/train.py \
+  --task LimX-HU-D04-01-Flat-Velocity \
+  --headless \
+  --run_name flat-2p8-scratch-001 \
+  --logger wandb \
+  --log_project_name limx-hu-d04-01 \
+  --max_iterations 8000
+```
+
+Logs land under `logs/rsl_rl/limx_hu_d04_01_flat_velocity/<timestamp>_flat-2p8-scratch-001/` (not `..._hs`).
+
 ## 1. Fixed-speed evaluation
 
 ```bash
 python scripts/rsl_rl/eval_velocity.py \
   --task LimX-HU-D04-01-Flat-Velocity \
-  --checkpoint logs/rsl_rl/limx_hu_d04_01_flat_velocity/<run>/model_4999.pt \
-  --speeds 1.0,1.4,1.8,2.2,2.5,2.78 \
+  --checkpoint logs/rsl_rl/limx_hu_d04_01_flat_velocity/<run>/model_7999.pt \
+  --speeds 1.0,1.5,2.0,2.4,2.8 \
   --num_seeds 5 \
   --headless \
-  --output logs/eval/<run>_model_4999.json
+  --output logs/eval/<run>_2p8.json
 ```
 
 Per speed × seed, the report records:
@@ -23,17 +50,19 @@ Per speed × seed, the report records:
 - joint velocity/torque saturation and action clipping
 - mean joint power and cost-of-transport
 
-Default gates (used for curriculum start):
+Pass gates (from-scratch 2.8 path):
 
-| Gate | Threshold |
+| Gate | Threshold (target ≥ 2.4 m/s, incl. 2.8) |
 |---|---|
-| Completion rate | > 95% |
+| Completion rate | ≥ 97% |
 | Orientation term rate | < 2% |
 | Speed RMSE | < 0.25 m/s |
 
-`initial_max_speed_mps` in the JSON is the highest speed that passes these gates.
+For target < 2.4 m/s, completion gate remains > 95%.
 
-## 2. Resume-based speed curriculum (not from scratch)
+## 2. Legacy resume-based HS curriculum (not used for 2.8 from-scratch)
+
+Abandoned for the 2.8 from-scratch goal. Retained only as historical reference.
 
 Register task: `LimX-HU-D04-01-Flat-Velocity-HS`
 

@@ -150,14 +150,14 @@ class CommandsCfg:
         heading_command=False,
         debug_vis=True,
         ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
-            lin_vel_x=(-0.1, 0.1),
+            lin_vel_x=(0.0, 2.8),
             lin_vel_y=(-0.05, 0.05),
-            ang_vel_z=(-0.1, 0.1),
+            ang_vel_z=(-0.25, 0.25),
         ),
         limit_ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
-            lin_vel_x=(-0.4, 0.8),
-            lin_vel_y=(-0.2, 0.2),
-            ang_vel_z=(-0.5, 0.5),
+            lin_vel_x=(0.0, 2.8),
+            lin_vel_y=(-0.05, 0.05),
+            ang_vel_z=(-0.25, 0.25),
         ),
     )
 
