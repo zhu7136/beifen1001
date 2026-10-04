@@ -1,0 +1,580 @@
+{
+  "checkpoint": "/root/code/beifen1001/logs/rsl_rl/limx_hu_d04_01_flat_velocity/2026-10-04_09-58-07_flat-2p8-scratch-001/model_8200.pt",
+  "speeds_mps": [
+    2.45,
+    2.5,
+    2.55,
+    2.8
+  ],
+  "gates": {
+    "completion_rate_min": 0.95,
+    "orientation_term_rate_max": 0.02,
+    "speed_rmse_max_mps": 0.25
+  },
+  "summary": [
+    {
+      "target_speed_mps": 2.45,
+      "num_seeds": 5,
+      "mean_vx_mps": 2.3508028143152595,
+      "rmse_vx_mps": 0.417100919753041,
+      "completion_rate": 1.0,
+      "bad_orientation_rate": 0.0,
+      "base_contact_rate": 0.0,
+      "base_height_rate": 0.0,
+      "foot_slide_mean": 2.35784392914623,
+      "joint_vel_saturation_rate": 0.27036000000000004,
+      "joint_torque_saturation_rate": 0.45464000000000004,
+      "action_clip_ratio": 0.17368,
+      "mean_joint_power_w": 27.474882901120186,
+      "cost_of_transport": 0.944784723337859,
+      "gates": {
+        "completion_rate_min": 0.97,
+        "orientation_term_rate_max": 0.02,
+        "speed_rmse_max_mps": 0.25,
+        "completion_pass": true,
+        "orientation_pass": true,
+        "rmse_pass": false
+      },
+      "gates_pass": false,
+      "seeds": [
+        {
+          "target_speed_mps": 2.45,
+          "seed": 0,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.351247999788821,
+          "rmse_vx_mps": 0.41758271262822777,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.3583130632191898,
+          "joint_vel_saturation_rate": 0.274,
+          "joint_torque_saturation_rate": 0.4566,
+          "action_clip_ratio": 0.17378709677419354,
+          "mean_joint_power_w": 27.468038347959517,
+          "cost_of_transport": 0.9443705397576541,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.45,
+          "seed": 1,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.3497530390292405,
+          "rmse_vx_mps": 0.41840283371935527,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.3568477046862246,
+          "joint_vel_saturation_rate": 0.2652,
+          "joint_torque_saturation_rate": 0.4564,
+          "action_clip_ratio": 0.17355483870967742,
+          "mean_joint_power_w": 27.455287183761598,
+          "cost_of_transport": 0.9445326945990583,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.45,
+          "seed": 2,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.350746160249412,
+          "rmse_vx_mps": 0.4164681196763532,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.357728210575879,
+          "joint_vel_saturation_rate": 0.2658,
+          "joint_torque_saturation_rate": 0.4558,
+          "action_clip_ratio": 0.1735741935483871,
+          "mean_joint_power_w": 27.469525141000748,
+          "cost_of_transport": 0.9446232727903635,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.45,
+          "seed": 3,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.3509793007835746,
+          "rmse_vx_mps": 0.41480344618141546,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.35803592094779,
+          "joint_vel_saturation_rate": 0.271,
+          "joint_torque_saturation_rate": 0.4522,
+          "action_clip_ratio": 0.17375483870967742,
+          "mean_joint_power_w": 27.498160779595374,
+          "cost_of_transport": 0.9455142229270617,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.45,
+          "seed": 4,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.3512875717252495,
+          "rmse_vx_mps": 0.4182474865598532,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.358294746302068,
+          "joint_vel_saturation_rate": 0.2758,
+          "joint_torque_saturation_rate": 0.4522,
+          "action_clip_ratio": 0.17372903225806452,
+          "mean_joint_power_w": 27.48340305328369,
+          "cost_of_transport": 0.9448828866151581,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "target_speed_mps": 2.5,
+      "num_seeds": 5,
+      "mean_vx_mps": 2.360649954943061,
+      "rmse_vx_mps": 0.48635495058861744,
+      "completion_rate": 1.0,
+      "bad_orientation_rate": 0.0,
+      "base_contact_rate": 0.0,
+      "base_height_rate": 0.0,
+      "foot_slide_mean": 2.367755663171411,
+      "joint_vel_saturation_rate": 0.27935999999999994,
+      "joint_torque_saturation_rate": 0.4897600000000001,
+      "action_clip_ratio": 0.17211225806451613,
+      "mean_joint_power_w": 27.727960696339608,
+      "cost_of_transport": 0.9495101666304656,
+      "gates": {
+        "completion_rate_min": 0.97,
+        "orientation_term_rate_max": 0.02,
+        "speed_rmse_max_mps": 0.25,
+        "completion_pass": true,
+        "orientation_pass": true,
+        "rmse_pass": false
+      },
+      "gates_pass": false,
+      "seeds": [
+        {
+          "target_speed_mps": 2.5,
+          "seed": 0,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.3611004749000073,
+          "rmse_vx_mps": 0.4863833865063985,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.368146616116166,
+          "joint_vel_saturation_rate": 0.2802,
+          "joint_torque_saturation_rate": 0.4876,
+          "action_clip_ratio": 0.17255483870967742,
+          "mean_joint_power_w": 27.72191063451767,
+          "cost_of_transport": 0.949121726932561,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.5,
+          "seed": 1,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.3609782985419034,
+          "rmse_vx_mps": 0.48609613723415285,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.3680830784142017,
+          "joint_vel_saturation_rate": 0.2764,
+          "joint_torque_saturation_rate": 0.4904,
+          "action_clip_ratio": 0.172,
+          "mean_joint_power_w": 27.741722916960715,
+          "cost_of_transport": 0.9498491952502919,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.5,
+          "seed": 2,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.362628220951557,
+          "rmse_vx_mps": 0.48577827304374877,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.36970493760705,
+          "joint_vel_saturation_rate": 0.2788,
+          "joint_torque_saturation_rate": 0.489,
+          "action_clip_ratio": 0.17227096774193548,
+          "mean_joint_power_w": 27.738041680932046,
+          "cost_of_transport": 0.9490599218410338,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.5,
+          "seed": 3,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.359647079370916,
+          "rmse_vx_mps": 0.48646628837140493,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.3668545011654496,
+          "joint_vel_saturation_rate": 0.28,
+          "joint_torque_saturation_rate": 0.49,
+          "action_clip_ratio": 0.17168387096774193,
+          "mean_joint_power_w": 27.729116139411925,
+          "cost_of_transport": 0.9499531753147359,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.5,
+          "seed": 4,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.3588957009509204,
+          "rmse_vx_mps": 0.4870506677873825,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 2.3659891825541854,
+          "joint_vel_saturation_rate": 0.2814,
+          "joint_torque_saturation_rate": 0.4918,
+          "action_clip_ratio": 0.17205161290322582,
+          "mean_joint_power_w": 27.70901210987568,
+          "cost_of_transport": 0.9495668138137048,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "target_speed_mps": 2.55,
+      "num_seeds": 5,
+      "mean_vx_mps": 0.23482189893096686,
+      "rmse_vx_mps": 2.316249773089356,
+      "completion_rate": 1.0,
+      "bad_orientation_rate": 0.0,
+      "base_contact_rate": 0.0,
+      "base_height_rate": 0.0,
+      "foot_slide_mean": 0.3862047431275249,
+      "joint_vel_saturation_rate": 0.020399999999999998,
+      "joint_torque_saturation_rate": 0.0014399999999999999,
+      "action_clip_ratio": 0.09740000000000001,
+      "mean_joint_power_w": 4.715026150679588,
+      "cost_of_transport": 1.6231869020967884,
+      "gates": {
+        "completion_rate_min": 0.97,
+        "orientation_term_rate_max": 0.02,
+        "speed_rmse_max_mps": 0.25,
+        "completion_pass": true,
+        "orientation_pass": true,
+        "rmse_pass": false
+      },
+      "gates_pass": false,
+      "seeds": [
+        {
+          "target_speed_mps": 2.55,
+          "seed": 0,
+          "num_episodes": 5,
+          "mean_vx_mps": 0.23627270632386208,
+          "rmse_vx_mps": 2.314855458523969,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.38759993156045675,
+          "joint_vel_saturation_rate": 0.021,
+          "joint_torque_saturation_rate": 0.002,
+          "action_clip_ratio": 0.09732903225806451,
+          "mean_joint_power_w": 4.718029760122299,
+          "cost_of_transport": 1.61421115706454,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.55,
+          "seed": 1,
+          "num_episodes": 5,
+          "mean_vx_mps": 0.23539543620049955,
+          "rmse_vx_mps": 2.3157190442707627,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.38668715666234493,
+          "joint_vel_saturation_rate": 0.0206,
+          "joint_torque_saturation_rate": 0.0018,
+          "action_clip_ratio": 0.09739354838709677,
+          "mean_joint_power_w": 4.716479010701179,
+          "cost_of_transport": 1.619694442697367,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.55,
+          "seed": 2,
+          "num_episodes": 5,
+          "mean_vx_mps": 0.23345441255569457,
+          "rmse_vx_mps": 2.3175229386197476,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.3853189802095294,
+          "joint_vel_saturation_rate": 0.0218,
+          "joint_torque_saturation_rate": 0.001,
+          "action_clip_ratio": 0.0974258064516129,
+          "mean_joint_power_w": 4.710588412761688,
+          "cost_of_transport": 1.6311214428814511,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.55,
+          "seed": 3,
+          "num_episodes": 5,
+          "mean_vx_mps": 0.2331907205954194,
+          "rmse_vx_mps": 2.317799874780829,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.38437346620112656,
+          "joint_vel_saturation_rate": 0.0164,
+          "joint_torque_saturation_rate": 0.0006,
+          "action_clip_ratio": 0.09748387096774194,
+          "mean_joint_power_w": 4.706209586501122,
+          "cost_of_transport": 1.6314479565476108,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.55,
+          "seed": 4,
+          "num_episodes": 5,
+          "mean_vx_mps": 0.23579621897935868,
+          "rmse_vx_mps": 2.315351549251475,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.3870441810041666,
+          "joint_vel_saturation_rate": 0.0222,
+          "joint_torque_saturation_rate": 0.0018,
+          "action_clip_ratio": 0.09736774193548386,
+          "mean_joint_power_w": 4.723823983311653,
+          "cost_of_transport": 1.6194595112929733,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "target_speed_mps": 2.8,
+      "num_seeds": 5,
+      "mean_vx_mps": -0.03952096174742648,
+      "rmse_vx_mps": 2.8400829845312794,
+      "completion_rate": 1.0,
+      "bad_orientation_rate": 0.0,
+      "base_contact_rate": 0.0,
+      "base_height_rate": 0.0,
+      "foot_slide_mean": 0.3942997216075659,
+      "joint_vel_saturation_rate": 0.028239999999999998,
+      "joint_torque_saturation_rate": 0.0,
+      "action_clip_ratio": 0.10546322580645162,
+      "mean_joint_power_w": 5.194877187275887,
+      "cost_of_transport": 10.63062277131107,
+      "gates": {
+        "completion_rate_min": 0.97,
+        "orientation_term_rate_max": 0.02,
+        "speed_rmse_max_mps": 0.25,
+        "completion_pass": true,
+        "orientation_pass": true,
+        "rmse_pass": false
+      },
+      "gates_pass": false,
+      "seeds": [
+        {
+          "target_speed_mps": 2.8,
+          "seed": 0,
+          "num_episodes": 5,
+          "mean_vx_mps": -0.040047611383348704,
+          "rmse_vx_mps": 2.8405931850695,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.3946730739325285,
+          "joint_vel_saturation_rate": 0.029,
+          "joint_torque_saturation_rate": 0.0,
+          "action_clip_ratio": 0.10563870967741935,
+          "mean_joint_power_w": 5.186279454112053,
+          "cost_of_transport": 10.468694370883552,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.8,
+          "seed": 1,
+          "num_episodes": 5,
+          "mean_vx_mps": -0.04039545044312254,
+          "rmse_vx_mps": 2.840938111286437,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.39389203490316865,
+          "joint_vel_saturation_rate": 0.028,
+          "joint_torque_saturation_rate": 0.0,
+          "action_clip_ratio": 0.10550967741935484,
+          "mean_joint_power_w": 5.1778120329976085,
+          "cost_of_transport": 10.361605417386501,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.8,
+          "seed": 2,
+          "num_episodes": 5,
+          "mean_vx_mps": -0.03985139346714132,
+          "rmse_vx_mps": 2.840397050599826,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.39416076470911504,
+          "joint_vel_saturation_rate": 0.03,
+          "joint_torque_saturation_rate": 0.0,
+          "action_clip_ratio": 0.10549677419354839,
+          "mean_joint_power_w": 5.184948808848858,
+          "cost_of_transport": 10.517540323363564,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.8,
+          "seed": 3,
+          "num_episodes": 5,
+          "mean_vx_mps": -0.038198457967117426,
+          "rmse_vx_mps": 2.8388102762460736,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.39428441840410233,
+          "joint_vel_saturation_rate": 0.0268,
+          "joint_torque_saturation_rate": 0.0,
+          "action_clip_ratio": 0.10541935483870968,
+          "mean_joint_power_w": 5.217638360857964,
+          "cost_of_transport": 11.041837916336878,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.8,
+          "seed": 4,
+          "num_episodes": 5,
+          "mean_vx_mps": -0.039111895476402425,
+          "rmse_vx_mps": 2.8396762994545615,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.3944883160889149,
+          "joint_vel_saturation_rate": 0.0274,
+          "joint_torque_saturation_rate": 0.0,
+          "action_clip_ratio": 0.10525161290322581,
+          "mean_joint_power_w": 5.20770727956295,
+          "cost_of_transport": 10.76343582858487,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "initial_max_speed_mps": 2.45,
+  "note": "Fixed-speed eval is authoritative for high-speed capability claims. Do not use mixed Train/mean_reward alone as acceptance evidence.",
+  "wandb_metrics": {
+    "eval/2.45/mean_vx": 2.3508028143152595,
+    "eval/2.45/rmse_vx": 0.417100919753041,
+    "eval/2.45/episode_completion": 1.0,
+    "eval/2.45/bad_orientation_rate": 0.0,
+    "eval/2.45/base_contact_rate": 0.0,
+    "eval/2.45/base_height_rate": 0.0,
+    "eval/2.45/foot_slide": 2.35784392914623,
+    "eval/2.45/joint_vel_saturation_rate": 0.27036000000000004,
+    "eval/2.45/joint_torque_saturation_rate": 0.45464000000000004,
+    "eval/2.45/action_clip_ratio": 0.17368,
+    "eval/2.45/mean_joint_power_w": 27.474882901120186,
+    "eval/2.45/cost_of_transport": 0.944784723337859,
+    "eval/2.45/gates_pass": 0.0,
+    "eval/2.5/mean_vx": 2.360649954943061,
+    "eval/2.5/rmse_vx": 0.48635495058861744,
+    "eval/2.5/episode_completion": 1.0,
+    "eval/2.5/bad_orientation_rate": 0.0,
+    "eval/2.5/base_contact_rate": 0.0,
+    "eval/2.5/base_height_rate": 0.0,
+    "eval/2.5/foot_slide": 2.367755663171411,
+    "eval/2.5/joint_vel_saturation_rate": 0.27935999999999994,
+    "eval/2.5/joint_torque_saturation_rate": 0.4897600000000001,
+    "eval/2.5/action_clip_ratio": 0.17211225806451613,
+    "eval/2.5/mean_joint_power_w": 27.727960696339608,
+    "eval/2.5/cost_of_transport": 0.9495101666304656,
+    "eval/2.5/gates_pass": 0.0,
+    "eval/2.55/mean_vx": 0.23482189893096686,
+    "eval/2.55/rmse_vx": 2.316249773089356,
+    "eval/2.55/episode_completion": 1.0,
+    "eval/2.55/bad_orientation_rate": 0.0,
+    "eval/2.55/base_contact_rate": 0.0,
+    "eval/2.55/base_height_rate": 0.0,
+    "eval/2.55/foot_slide": 0.3862047431275249,
+    "eval/2.55/joint_vel_saturation_rate": 0.020399999999999998,
+    "eval/2.55/joint_torque_saturation_rate": 0.0014399999999999999,
+    "eval/2.55/action_clip_ratio": 0.09740000000000001,
+    "eval/2.55/mean_joint_power_w": 4.715026150679588,
+    "eval/2.55/cost_of_transport": 1.6231869020967884,
+    "eval/2.55/gates_pass": 0.0,
+    "eval/2.8/mean_vx": -0.03952096174742648,
+    "eval/2.8/rmse_vx": 2.8400829845312794,
+    "eval/2.8/episode_completion": 1.0,
+    "eval/2.8/bad_orientation_rate": 0.0,
+    "eval/2.8/base_contact_rate": 0.0,
+    "eval/2.8/base_height_rate": 0.0,
+    "eval/2.8/foot_slide": 0.3942997216075659,
+    "eval/2.8/joint_vel_saturation_rate": 0.028239999999999998,
+    "eval/2.8/joint_torque_saturation_rate": 0.0,
+    "eval/2.8/action_clip_ratio": 0.10546322580645162,
+    "eval/2.8/mean_joint_power_w": 5.194877187275887,
+    "eval/2.8/cost_of_transport": 10.63062277131107,
+    "eval/2.8/gates_pass": 0.0
+  }
+}

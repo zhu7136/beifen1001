@@ -210,7 +210,7 @@ def _eval_one_speed(
     if hasattr(env.unwrapped, "seed"):
         env.unwrapped.seed(run_seed)
 
-    # Set fixed command before reset so reset-time resampling uses it.
+    # Set fixed command.
     cmd_term.cfg.ranges.lin_vel_x = (
         float(target_speed_mps),
         float(target_speed_mps),
@@ -219,16 +219,10 @@ def _eval_one_speed(
     cmd_term.cfg.ranges.ang_vel_z = (0.0, 0.0)
     cmd_term.cfg.rel_standing_envs = 0.0
 
-    # Important: do not inherit the previous speed/seed state.
-    reset_result = env.reset()
-    obs = reset_result[0] if isinstance(reset_result, tuple) else reset_result
+    # Resample command with the new fixed speed.
+    cmd_term._resample_command(list(range(env.unwrapped.num_envs)))
 
-    # Ensure all environments received the exact fixed command.
-    cmd_term._resample_command(
-        list(range(env.unwrapped.num_envs))
-    )
-
-    # Refresh observations after command resampling.
+    # Get fresh observations after command change.
     obs = env.get_observations()
     if isinstance(obs, tuple):
         obs = obs[0]
