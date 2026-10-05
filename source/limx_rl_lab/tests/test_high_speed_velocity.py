@@ -145,7 +145,13 @@ def test_eval_metrics_and_gates():
     assert rec.mean_vx_mps > 2.0
     assert rec.rmse_vx_mps < 0.25
     assert rec.completion_rate == 1.0
-    assert rec.cost_of_transport > 0.0
+    assert rec.mean_total_joint_power_w == 50.0
+    assert rec.extras["robot_mass_kg"] == 30.0
+    # CoT = total_power / (mass * 9.81 * max(|mean_vx|, 1e-3))
+    expected_cot = 50.0 / (30.0 * 9.81 * max(abs(rec.mean_vx_mps), 1e-3))
+    assert math.isclose(rec.cost_of_transport, expected_cot, rel_tol=1e-9)
+    assert rec.command_vx_min_mps == target
+    assert rec.command_vx_max_mps == target
 
     rec2 = compute_run_metrics(
         target_speed_mps=target,
@@ -175,22 +181,53 @@ def test_eval_metrics_and_gates():
     assert "joint_vel_saturation_rate" in s_pass
     assert "action_clip_ratio" in s_pass
     assert "cost_of_transport" in s_pass
+    assert "mean_total_joint_power_w" in s_pass
+    assert "mean_joint_power_w" not in s_pass
+    assert s_pass["command_vx_min_mps"] == target
+    assert s_pass["command_vx_max_mps"] == target
 
     s_fail = summarize_speed([rec2], SpeedGates())
     assert s_fail["gates_pass"] is False
     assert s_fail["gates"]["orientation_pass"] is False
 
+    # Inclusive boundary: exact threshold values count as pass
+    boundary = compute_run_metrics(
+        target_speed_mps=2.0,
+        seed=0,
+        vx_cmd=[2.0] * 10,
+        vx_meas=[1.85] * 10,
+        timed_out=[1.0] * 4,
+        terminated=[0.0] * 4,
+        bad_orientation=[0.0] * 4,
+        joint_power=10.0,
+        robot_mass_kg=30.0,
+        # force boundary by passing custom gates below
+    )
+    s_bound = summarize_speed(
+        [boundary],
+        SpeedGates(completion_rate_min=1.0, orientation_term_rate_max=0.0, speed_rmse_max_mps=0.15),
+    )
+    assert s_bound["completion_rate"] == 1.0
+    assert s_bound["gates"]["completion_pass"] is True
+    assert s_bound["gates"]["orientation_pass"] is True
+    assert s_bound["gates"]["rmse_pass"] is True
+    assert s_bound["gates_pass"] is True
+
     report = build_eval_report(
         checkpoint="model_4999.pt",
         speeds=[1.0, 2.78],
-        seed_records=[rec],  # only the passing 2.78 run for initial_max recommendation
+        seed_records=[rec],  # only the passing 2.78 run
         gates=SpeedGates(),
     )
-    assert report["initial_max_speed_mps"] == 2.78
+    assert report["highest_passing_speed_mps"] == 2.78
+    assert "initial_max_speed_mps" not in report
     assert "eval/2.78/rmse_vx" in report["wandb_metrics"]
+    assert "eval/2.78/mean_total_joint_power_w" in report["wandb_metrics"]
+    assert "eval/2.78/command_vx_mean_mps" in report["wandb_metrics"]
     assert "authoritative" in report["note"].lower() or "Fixed-speed" in report["note"]
+    assert "not comparable" in report["note"].lower()
 
-    # failing low-speed record should not be selected as initial max when mixed at same speed
+    # failing only → null highest passing
     report_fail = build_eval_report(
         checkpoint="model_4999.pt",
         speeds=[2.78],
@@ -198,9 +235,115 @@ def test_eval_metrics_and_gates():
         gates=SpeedGates(),
     )
     assert report_fail["summary"][0]["gates_pass"] is False
-    assert report_fail["initial_max_speed_mps"] is None or report_fail["initial_max_speed_mps"] < 2.78
+    assert report_fail["highest_passing_speed_mps"] is None
+    assert "initial_max_speed_mps" not in report_fail
 
     assert recommend_initial_max_speed([s_fail, s_pass]) == 2.78
+    assert recommend_initial_max_speed([s_fail]) is None
+
+
+def test_fixed_speed_command_mode_source():
+    """Command term exposes fixed_speed_mps default None and fixed resample path."""
+    src = (PKG_ROOT / "limx_rl_lab/tasks/locomotion/mdp/commands/velocity_command.py").read_text()
+    assert "fixed_speed_mps: float | None = None" in src
+    assert "if fixed_speed is not None:" in src
+    assert "if getattr(self.cfg, \"fixed_speed_mps\", None) is not None:" in src
+
+    try:
+        from limx_rl_lab.tasks.locomotion.mdp.commands.velocity_command import (
+            HighSpeedUniformVelocityCommand,
+            HighSpeedUniformVelocityCommandCfg,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"[skip] isaaclab command import unavailable: {exc}")
+        return
+
+    cfg = HighSpeedUniformVelocityCommandCfg()
+    assert getattr(cfg, "fixed_speed_mps", None) is None
+
+    import torch
+
+    class _Stub:
+        pass
+
+    stub = _Stub()
+    stub.device = "cpu"
+    stub.num_envs = 4
+    stub.vel_command_b = torch.zeros(4, 3)
+    stub.is_standing_env = torch.ones(4, dtype=torch.bool)
+    stub.is_heading_env = torch.ones(4, dtype=torch.bool)
+    stub.heading_target = torch.zeros(4)
+
+    class _Ranges:
+        heading = (0.0, 0.0)
+        lin_vel_x = (0.0, 2.0)
+        lin_vel_y = (-0.05, 0.05)
+        ang_vel_z = (-0.25, 0.25)
+
+    class _Cfg:
+        fixed_speed_mps = 2.4
+        heading_command = False
+        rel_standing_envs = 0.5
+        rel_heading_envs = 0.0
+        ranges = _Ranges()
+        near_frac = 0.5
+        mid_frac = 0.35
+        low_frac = 0.15
+        low_stand_max = 0.2
+
+    stub.cfg = _Cfg()
+    HighSpeedUniformVelocityCommand._resample_command(stub, list(range(4)))
+    assert torch.allclose(stub.vel_command_b[:, 0], torch.full((4,), 2.4))
+    assert torch.allclose(stub.vel_command_b[:, 1], torch.zeros(4))
+    assert torch.allclose(stub.vel_command_b[:, 2], torch.zeros(4))
+    assert not bool(stub.is_standing_env.any())
+
+
+def test_foot_slide_contact_gated_and_total_mass():
+    """Contact-gated foot slide + total mass helpers (synthetic, no Isaac)."""
+    import torch
+
+    # foot-slide accumulation logic mirrors eval_velocity.py
+    foot_vel_xy = torch.tensor([[0.1, 0.0], [2.4, 0.0], [0.05, 0.0], [0.0, 2.4]])
+    contact = torch.tensor([[True, False], [False, False], [True, True], [False, True]])
+    slide_sum = float((foot_vel_xy * contact).sum().item())
+    slide_samples = int(contact.sum().item())
+    foot_slide = slide_sum / max(slide_samples, 1)
+    # contact samples only: 0.1 + 0.05 + 2.4 = 2.55 / 4
+    assert math.isclose(foot_slide, 2.55 / 4.0, rel_tol=1e-5, abs_tol=1e-6)
+    # non-contact feet are ignored even if sliding
+    assert math.isclose(slide_sum, 2.55, rel_tol=1e-5, abs_tol=1e-6)
+    assert slide_samples == 4
+
+    class _View:
+        def __init__(self, masses):
+            self._m = masses
+
+        def get_masses(self):
+            return self._m
+
+    class _Robot:
+        def __init__(self, masses):
+            self.root_physx_view = _View(masses)
+
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "eval_velocity_mod", ROOT / "scripts" / "rsl_rl" / "eval_velocity.py"
+    )
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+    _total_robot_mass = mod._total_robot_mass
+
+    # 1D: sum of body masses
+    r1 = _Robot(torch.tensor([10.0, 15.0, 5.0]))
+    assert _total_robot_mass(r1) == 30.0
+    # 2D: per-env body sum, then mean over envs
+    r2 = _Robot(torch.tensor([[10.0, 15.0, 5.0], [8.0, 8.0, 8.0]]))
+    assert _total_robot_mass(r2) == 27.0  # (30 + 24) / 2
+    # mean-of-bodies would be 12.0 — must not be used
+    assert _total_robot_mass(r2) != 12.0
 
 
 def test_highspeed_cfg_and_registration():
@@ -218,6 +361,8 @@ def test_highspeed_cfg_and_registration():
     assert cfg.commands.base_velocity.high_speed.target_speed_mps == 2.78
     assert cfg.commands.base_velocity.ranges.lin_vel_y[1] <= 0.05
     assert hasattr(cfg.curriculum, "gated_speed_levels")
+    # training path stays mixed (fixed mode off)
+    assert getattr(cfg.commands.base_velocity, "fixed_speed_mps", None) is None
     # baseline rewards preserved (not redesigned)
     assert cfg.rewards.track_lin_vel_xy.weight == 1.5
     assert agent_cfg.HighSpeedPPORunnerCfg.learning_rate == 1e-4
@@ -248,12 +393,15 @@ def test_eval_cli_help():
     assert "--num_seeds" in out, out
     assert "--speeds" in out, out
     assert "authoritative" in out.lower() or "Fixed-speed" in out
+    assert "fixed_speed_mps" in out or "pinned" in out
 
 
 if __name__ == "__main__":
     test_evaluate_speed_gates_promote_and_freeze()
     test_command_mix_histogram_and_straight_line()
     test_eval_metrics_and_gates()
+    test_fixed_speed_command_mode_source()
+    test_foot_slide_contact_gated_and_total_mass()
     test_highspeed_cfg_and_registration()
     test_eval_cli_help()
     print("ALL TESTS PASSED")

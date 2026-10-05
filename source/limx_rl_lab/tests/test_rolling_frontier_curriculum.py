@@ -184,8 +184,12 @@ def test_staged_eval_gates():
 
 
 def test_checkpoint_and_docs():
-    ckpt = ROOT / "logs/rsl_rl/limx_hu_d04_01_flat_velocity_hs/2026-10-01_20-46-27_hs-ft-001/model_2999.pt"
-    assert ckpt.exists(), f"missing preferred checkpoint: {ckpt}"
+    ckpt_dir = ROOT / "logs/rsl_rl/limx_hu_d04_01_flat_velocity_hs"
+    # prefer latest hs-round2 run with model_2999.pt
+    candidates = sorted(ckpt_dir.glob("*/model_2999.pt")) if ckpt_dir.exists() else []
+    assert candidates, f"missing model_2999.pt under {ckpt_dir}"
+    ckpt = candidates[-1]
+    assert ckpt.exists()
     doc = ROOT / "docs/hs_round2_rolling_frontier.md"
     assert doc.exists()
     text = doc.read_text()

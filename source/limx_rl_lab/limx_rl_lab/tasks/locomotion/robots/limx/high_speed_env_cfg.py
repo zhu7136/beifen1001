@@ -5,10 +5,14 @@ from __future__ import annotations
 import os
 
 from isaaclab.managers import CurriculumTermCfg as CurrTerm
+from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.utils import configclass
 
 from limx_rl_lab.tasks.locomotion import mdp
-from limx_rl_lab.tasks.locomotion.robots.limx.velocity_env_cfg import RobotEnvCfg
+from limx_rl_lab.tasks.locomotion.robots.limx.velocity_env_cfg import (
+    RewardsCfg as BaseRewardsCfg,
+    RobotEnvCfg,
+)
 
 
 @configclass
@@ -60,14 +64,37 @@ class HighSpeedCurriculumCfg:
 
 
 @configclass
+class HighSpeedRewardsCfg(BaseRewardsCfg):
+    joint_vel_limit_soft = RewTerm(
+        func=mdp.joint_vel_limit_soft,
+        weight=-0.10,
+        params={"soft_ratio": 0.90},
+    )
+
+
+@configclass
 class RobotHighSpeedEnvCfg(RobotEnvCfg):
     """Round-2: start 2.0, target 2.4, increment 0.1; rewards/network unchanged."""
 
     commands: HighSpeedCommandsCfg = HighSpeedCommandsCfg()
     curriculum: HighSpeedCurriculumCfg = HighSpeedCurriculumCfg()
+    rewards: HighSpeedRewardsCfg = HighSpeedRewardsCfg()
 
     def __post_init__(self):
         super().__post_init__()
+
+        self.actions.JointPositionAction.scale = float(
+            os.getenv("LIMX_HS_ACTION_SCALE", "0.25")
+        )
+
+        self.rewards.joint_vel_limit_soft.weight = float(
+            os.getenv("LIMX_HS_JOINT_VEL_LIMIT_WEIGHT", "-0.10")
+        )
+
+        self.rewards.track_lin_vel_xy.weight = float(
+            os.getenv("LIMX_HS_TRACK_LIN_VEL_WEIGHT", "1.5")
+        )
+
         hs = self.commands.base_velocity.high_speed
         self.commands.base_velocity.ranges.lin_vel_x = (0.0, float(hs.initial_max_speed_mps))
         self.commands.base_velocity.ranges.lin_vel_y = (-0.05, 0.05)

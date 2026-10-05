@@ -54,8 +54,11 @@ class RunMetrics:
     joint_vel_saturation_rate: float
     joint_torque_saturation_rate: float
     action_clip_ratio: float
-    mean_joint_power_w: float
+    mean_total_joint_power_w: float
     cost_of_transport: float
+    command_vx_min_mps: float | None = None
+    command_vx_max_mps: float | None = None
+    command_vx_mean_mps: float | None = None
     extras: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
@@ -80,6 +83,9 @@ def compute_run_metrics(
     joint_power=None,
     robot_mass_kg=None,
     g: float = 9.81,
+    command_vx_min=None,
+    command_vx_max=None,
+    command_vx_mean=None,
 ) -> RunMetrics:
     """Compute fixed-speed run metrics from per-step / per-episode tensors.
 
@@ -90,11 +96,12 @@ def compute_run_metrics(
         terminated: per-episode bool, True if any non-timeout termination fired.
         bad_orientation / base_contact / base_height: optional per-episode rates (0..1)
             or bool arrays; if None, rates are 0.0.
-        foot_slide: optional scalar mean foot-slide magnitude.
+        foot_slide: optional mean contact-period foot horizontal speed (m/s).
         joint_vel_sat / joint_torque_sat: optional scalars in [0, 1].
         action_clip_ratio: optional scalar in [0, 1].
-        joint_power: optional scalar mean mechanical power (W).
-        robot_mass_kg: optional robot mass for cost-of-transport.
+        joint_power: optional whole-robot mean mechanical power (W), sum |tau*omega| over joints.
+        robot_mass_kg: optional total robot mass (kg) for cost-of-transport.
+        command_vx_min / command_vx_max / command_vx_mean: optional commanded vx stats.
     """
     vx_cmd = _to_float_list(vx_cmd)
     vx_meas = _to_float_list(vx_meas)
@@ -132,6 +139,17 @@ def compute_run_metrics(
     else:
         cot = 0.0
 
+    extras = {"early_term_rate": float(early_term_rate)}
+    if robot_mass_kg is not None:
+        extras["robot_mass_kg"] = float(robot_mass_kg)
+
+    if command_vx_min is None and vx_cmd:
+        command_vx_min = min(vx_cmd)
+    if command_vx_max is None and vx_cmd:
+        command_vx_max = max(vx_cmd)
+    if command_vx_mean is None and vx_cmd:
+        command_vx_mean = sum(vx_cmd) / len(vx_cmd)
+
     return RunMetrics(
         target_speed_mps=float(target_speed_mps),
         seed=int(seed),
@@ -146,9 +164,12 @@ def compute_run_metrics(
         joint_vel_saturation_rate=float(joint_vel_sat) if joint_vel_sat is not None else 0.0,
         joint_torque_saturation_rate=float(joint_torque_sat) if joint_torque_sat is not None else 0.0,
         action_clip_ratio=float(action_clip_ratio) if action_clip_ratio is not None else 0.0,
-        mean_joint_power_w=mean_power,
+        mean_total_joint_power_w=mean_power,
         cost_of_transport=float(cot),
-        extras={"early_term_rate": float(early_term_rate)},
+        command_vx_min_mps=None if command_vx_min is None else float(command_vx_min),
+        command_vx_max_mps=None if command_vx_max is None else float(command_vx_max),
+        command_vx_mean_mps=None if command_vx_mean is None else float(command_vx_mean),
+        extras=extras,
     )
 
 
@@ -158,7 +179,7 @@ def summarize_speed(records: list[RunMetrics], gates: SpeedGates | None = None) 
         return {
             "num_seeds": 0,
             "gates_pass": False,
-            "initial_max_speed_candidate_mps": None,
+            "highest_passing_speed_candidate_mps": None,
         }
     gates = gates or SpeedGates()
     n = len(records)
@@ -172,14 +193,20 @@ def summarize_speed(records: list[RunMetrics], gates: SpeedGates | None = None) 
     jv_sat = sum(r.joint_vel_saturation_rate for r in records) / n
     tq_sat = sum(r.joint_torque_saturation_rate for r in records) / n
     clip = sum(r.action_clip_ratio for r in records) / n
-    power = sum(r.mean_joint_power_w for r in records) / n
+    power = sum(r.mean_total_joint_power_w for r in records) / n
     cot = sum(r.cost_of_transport for r in records) / n
 
-    gate_pass = (
-        completion > gates.completion_rate_min
-        and orient < gates.orientation_term_rate_max
-        and rmse < gates.speed_rmse_max_mps
-    )
+    cmd_mins = [r.command_vx_min_mps for r in records if r.command_vx_min_mps is not None]
+    cmd_maxs = [r.command_vx_max_mps for r in records if r.command_vx_max_mps is not None]
+    cmd_means = [r.command_vx_mean_mps for r in records if r.command_vx_mean_mps is not None]
+    command_vx_min = min(cmd_mins) if cmd_mins else None
+    command_vx_max = max(cmd_maxs) if cmd_maxs else None
+    command_vx_mean = (sum(cmd_means) / len(cmd_means)) if cmd_means else None
+
+    completion_pass = completion >= gates.completion_rate_min
+    orientation_pass = orient <= gates.orientation_term_rate_max
+    rmse_pass = rmse <= gates.speed_rmse_max_mps
+    gate_pass = completion_pass and orientation_pass and rmse_pass
     target = records[0].target_speed_mps
     return {
         "target_speed_mps": target,
@@ -194,15 +221,18 @@ def summarize_speed(records: list[RunMetrics], gates: SpeedGates | None = None) 
         "joint_vel_saturation_rate": jv_sat,
         "joint_torque_saturation_rate": tq_sat,
         "action_clip_ratio": clip,
-        "mean_joint_power_w": power,
+        "mean_total_joint_power_w": power,
         "cost_of_transport": cot,
+        "command_vx_min_mps": command_vx_min,
+        "command_vx_max_mps": command_vx_max,
+        "command_vx_mean_mps": command_vx_mean,
         "gates": {
             "completion_rate_min": gates.completion_rate_min,
             "orientation_term_rate_max": gates.orientation_term_rate_max,
             "speed_rmse_max_mps": gates.speed_rmse_max_mps,
-            "completion_pass": completion > gates.completion_rate_min,
-            "orientation_pass": orient < gates.orientation_term_rate_max,
-            "rmse_pass": rmse < gates.speed_rmse_max_mps,
+            "completion_pass": completion_pass,
+            "orientation_pass": orientation_pass,
+            "rmse_pass": rmse_pass,
         },
         "gates_pass": bool(gate_pass),
         "seeds": [r.to_dict() for r in records],
@@ -210,14 +240,11 @@ def summarize_speed(records: list[RunMetrics], gates: SpeedGates | None = None) 
 
 
 def recommend_initial_max_speed(summaries: list[dict]) -> float | None:
-    """Highest speed with gates_pass, else lowest tested speed that completed reasonably."""
+    """Highest speed with gates_pass; None when no speed passes all gates."""
     passing = [s for s in summaries if s.get("gates_pass")]
-    if passing:
-        return max(s["target_speed_mps"] for s in passing)
-    completed = [s for s in summaries if s.get("completion_rate", 0.0) > 0.5]
-    if completed:
-        return min(s["target_speed_mps"] for s in completed)
-    return None
+    if not passing:
+        return None
+    return max(s["target_speed_mps"] for s in passing)
 
 
 def build_eval_report(
@@ -233,23 +260,23 @@ def build_eval_report(
     summaries = []
     for s in sorted(by_speed):
         # per-speed gates: stricter staged acceptance when target >= 2.4
-        spd_gates = SpeedGates.for_target(s) if gates is None or gates.completion_rate_min <= 0.95 else gates
         if gates is not None and gates.completion_rate_min > 0.95:
             # operator forced stricter global gates
             spd_gates = gates
         else:
             spd_gates = SpeedGates.for_target(s)
         summaries.append(summarize_speed(by_speed[s], spd_gates))
-    initial = recommend_initial_max_speed(summaries)
+    highest = recommend_initial_max_speed(summaries)
     return {
         "checkpoint": checkpoint,
         "speeds_mps": list(speeds),
         "gates": asdict(gates),
         "summary": summaries,
-        "initial_max_speed_mps": initial,
+        "highest_passing_speed_mps": highest,
         "note": (
             "Fixed-speed eval is authoritative for high-speed capability claims. "
-            "Do not use mixed Train/mean_reward alone as acceptance evidence."
+            "Do not use mixed Train/mean_reward alone as acceptance evidence. "
+            "CoT after the total-power/mass fix is not comparable to historical JSON CoT."
         ),
         "wandb_metrics": _wandb_metrics(summaries),
     }
@@ -271,8 +298,11 @@ def _wandb_metrics(summaries: list[dict]) -> dict:
         out[f"{prefix}/joint_vel_saturation_rate"] = s["joint_vel_saturation_rate"]
         out[f"{prefix}/joint_torque_saturation_rate"] = s["joint_torque_saturation_rate"]
         out[f"{prefix}/action_clip_ratio"] = s["action_clip_ratio"]
-        out[f"{prefix}/mean_joint_power_w"] = s["mean_joint_power_w"]
+        out[f"{prefix}/mean_total_joint_power_w"] = s["mean_total_joint_power_w"]
         out[f"{prefix}/cost_of_transport"] = s["cost_of_transport"]
+        out[f"{prefix}/command_vx_min_mps"] = s.get("command_vx_min_mps")
+        out[f"{prefix}/command_vx_max_mps"] = s.get("command_vx_max_mps")
+        out[f"{prefix}/command_vx_mean_mps"] = s.get("command_vx_mean_mps")
         out[f"{prefix}/gates_pass"] = float(bool(s["gates_pass"]))
     return out
 

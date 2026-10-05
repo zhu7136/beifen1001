@@ -31,6 +31,17 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
         n = len(env_ids)
         if n == 0:
             return
+
+        fixed_speed = getattr(self.cfg, "fixed_speed_mps", None)
+        if fixed_speed is not None:
+            self.vel_command_b[env_ids, 0] = float(fixed_speed)
+            self.vel_command_b[env_ids, 1] = 0.0
+            self.vel_command_b[env_ids, 2] = 0.0
+            self.is_standing_env[env_ids] = False
+            if self.cfg.heading_command:
+                self.is_heading_env[env_ids] = False
+            return
+
         ranges = self.cfg.ranges
         cmd = sample_mixed_velocity_commands(
             num_envs=n,
@@ -57,6 +68,8 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
     def compute(self, dt: float):
         """Update commands + rolling frontier curriculum every step."""
         super().compute(dt)
+        if getattr(self.cfg, "fixed_speed_mps", None) is not None:
+            return
         self._update_frontier_metrics()
 
     def _update_frontier_metrics(self):
@@ -208,6 +221,11 @@ class HighSpeedCurriculumParams:
 @configclass
 class HighSpeedUniformVelocityCommandCfg(UniformLevelVelocityCommandCfg):
     class_type: type = HighSpeedUniformVelocityCommand
+
+    # None: mixed sampling during training;
+    # float: evaluation (or operator freeze) pins all envs to this speed.
+    fixed_speed_mps: float | None = None
+
     high_speed: HighSpeedCurriculumParams = HighSpeedCurriculumParams()
     near_frac: float = 0.5
     mid_frac: float = 0.35

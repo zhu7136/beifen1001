@@ -11,7 +11,7 @@ from isaaclab.assets import Articulation, RigidObject
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.sensors import ContactSensor
 
-from .observations import gait_phase as gait_phase_obs
+from .observations import gait_phase_fraction
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
@@ -28,6 +28,28 @@ def energy(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("r
     qvel = asset.data.joint_vel[:, asset_cfg.joint_ids]
     qfrc = asset.data.applied_torque[:, asset_cfg.joint_ids]
     return torch.sum(torch.abs(qvel) * torch.abs(qfrc), dim=-1)
+
+
+def joint_vel_limit_soft(
+    env: ManagerBasedRLEnv,
+    soft_ratio: float = 0.90,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """Penalize joint velocities only when they approach their soft limits."""
+    asset: Articulation = env.scene[asset_cfg.name]
+
+    joint_vel = asset.data.joint_vel[:, asset_cfg.joint_ids]
+    joint_vel_limits = asset.data.soft_joint_vel_limits[:, asset_cfg.joint_ids]
+
+    ratio = joint_vel.abs() / joint_vel_limits.clamp_min(1.0e-6)
+
+    # Zero below 90% of the limit; normalized hinge above it.
+    excess = torch.clamp(
+        (ratio - soft_ratio) / max(1.0 - soft_ratio, 1.0e-6),
+        min=0.0,
+    )
+
+    return torch.sum(torch.square(excess), dim=-1)
 
 
 def stand_still(
@@ -218,12 +240,12 @@ def cross_arm_swing_stance(
     command_name: str = "base_velocity",
     command_threshold: float = 0.1,
     position_scale: float = 8.0,
-    period_start: float = 0.72,
-    period_end: float = 0.60,
+    period_start: float | None = None,
+    period_end: float | None = None,
     speed_start: float = 2.0,
     speed_end: float = 2.8,
 ) -> torch.Tensor:
-    """Reward contralateral arm swing from the default pose using gait phase."""
+    """Reward contralateral arm swing from the default pose using shared gait phase."""
     if not hasattr(env, "episode_length_buf"):
         env.episode_length_buf = torch.zeros(env.num_envs, device=env.device, dtype=torch.long)
 
@@ -253,18 +275,17 @@ def cross_arm_swing_stance(
     left_hand_delta_x = hand_delta_x[:, 0]
     right_hand_delta_x = hand_delta_x[:, 1]
 
-    # Compute dynamic period
-    command = env.command_manager.get_command("base_velocity")
-    command_speed = command[:, 0].abs()
-    
-    alpha = torch.clamp(
-        (command_speed - speed_start) / max(speed_end - speed_start, 1.0e-6),
-        0.0,
-        1.0,
+    # Shared continuous phase for all configs (None period_start/end → fixed period).
+    global_phase = gait_phase_fraction(
+        env,
+        period=period,
+        command_name=command_name,
+        period_start=period_start,
+        period_end=period_end,
+        speed_start=speed_start,
+        speed_end=speed_end,
     )
-    current_period = period_start + alpha * (period_end - period_start)
-    
-    phase_signal = gait_phase_obs(env, period=current_period)[:, 0]
+    phase_signal = torch.sin(2.0 * torch.pi * global_phase)
 
     # left stance  -> right hand forward, left hand backward
     # right stance -> left hand forward, right hand backward
@@ -303,26 +324,26 @@ def feet_gait(
     threshold: float = 0.5,
     command_name=None,
     command_threshold: float = 0.1,
-    period_start: float = 0.72,
-    period_end: float = 0.60,
+    period_start: float | None = None,
+    period_end: float | None = None,
     speed_start: float = 2.0,
     speed_end: float = 2.8,
 ) -> torch.Tensor:
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
     is_contact = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids] > 0
 
-    # Compute dynamic period based on command speed
-    command = env.command_manager.get_command("base_velocity")
-    command_speed = command[:, 0].abs()
-    
-    alpha = torch.clamp(
-        (command_speed - speed_start) / max(speed_end - speed_start, 1.0e-6),
-        0.0,
-        1.0,
-    )
-    current_period = period_start + alpha * (period_end - period_start)
-    
-    global_phase = ((env.episode_length_buf * env.step_dt) % current_period / current_period).unsqueeze(1)
+    if not hasattr(env, "episode_length_buf"):
+        env.episode_length_buf = torch.zeros(env.num_envs, device=env.device, dtype=torch.long)
+
+    global_phase = gait_phase_fraction(
+        env,
+        period=period,
+        command_name=command_name or "base_velocity",
+        period_start=period_start,
+        period_end=period_end,
+        speed_start=speed_start,
+        speed_end=speed_end,
+    ).unsqueeze(1)
     phases = []
     for offset_ in offset:
         phase = (global_phase + offset_) % 1.0

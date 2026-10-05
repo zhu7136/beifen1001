@@ -18,6 +18,33 @@ import json
 import sys
 from pathlib import Path
 
+FOOT_BODY_NAMES = ["left_ankle_roll_link", "right_ankle_roll_link"]
+
+
+def _total_robot_mass(robot) -> float | None:
+    """Total articulation mass: per-env sum of body masses, then mean over envs."""
+    try:
+        masses = robot.root_physx_view.get_masses()
+    except Exception:  # noqa: BLE001
+        return None
+    if masses.ndim == 1:
+        return float(masses.sum().item())
+    return float(masses.sum(dim=-1).mean().item())
+
+
+def _resolve_foot_ids(robot, contact_sensor):
+    foot_body_ids = None
+    foot_sensor_ids = None
+    if robot is not None and hasattr(robot, "find_bodies"):
+        ids, _ = robot.find_bodies(FOOT_BODY_NAMES)
+        if ids is not None and len(ids) > 0:
+            foot_body_ids = ids
+    if contact_sensor is not None and hasattr(contact_sensor, "find_bodies"):
+        ids, _ = contact_sensor.find_bodies(FOOT_BODY_NAMES)
+        if ids is not None and len(ids) > 0:
+            foot_sensor_ids = ids
+    return foot_body_ids, foot_sensor_ids
+
 
 def _build_parser() -> argparse.ArgumentParser:
     from isaaclab.app import AppLauncher
@@ -72,6 +99,7 @@ def _parse_args(argv=None):
         print("")
         print("Fixed-speed evaluation is authoritative for high-speed capability claims.")
         print("Do not use mixed Train/mean_reward alone as acceptance evidence.")
+        print("Commanded vx is pinned via command-term fixed_speed_mps; drift raises.")
         sys.exit(0)
     parser = _build_parser()
     return parser.parse_args(argv)
@@ -98,7 +126,7 @@ def main(argv=None):
 
     import limx_rl_lab.tasks  # noqa: F401
     from limx_rl_lab.utils.parser_cfg import parse_env_cfg
-    from limx_rl_lab.utils.velocity_eval import SpeedGates, build_eval_report, compute_run_metrics
+    from limx_rl_lab.utils.velocity_eval import SpeedGates, build_eval_report
 
     env_cfg = parse_env_cfg(
         args.task,
@@ -129,10 +157,14 @@ def main(argv=None):
     cmd_term = env.unwrapped.command_manager.get_term("base_velocity")
     robot = env.unwrapped.scene["robot"]
     device = env.unwrapped.device
-    try:
-        mass = float(robot.root_physx_view.get_masses().mean().item())
-    except Exception:  # noqa: BLE001
-        mass = None
+    scene = getattr(env.unwrapped, "scene", None)
+    contact_sensor = None
+    if scene is not None:
+        sensors = getattr(scene, "sensors", None) or {}
+        contact_sensor = sensors.get("contact_forces")
+
+    mass = _total_robot_mass(robot)
+    foot_body_ids, foot_sensor_ids = _resolve_foot_ids(robot, contact_sensor)
 
     seed_records = []
     for speed in speeds:
@@ -147,12 +179,16 @@ def main(argv=None):
                 seed=seed,
                 global_seed=args.seed,
                 mass=mass,
+                contact_sensor=contact_sensor,
+                foot_body_ids=foot_body_ids,
+                foot_sensor_ids=foot_sensor_ids,
             )
             seed_records.append(record)
             print(
                 f"[eval] speed={speed:.2f} seed={seed} "
                 f"mean_vx={record.mean_vx_mps:.3f} rmse={record.rmse_vx_mps:.3f} "
-                f"completion={record.completion_rate:.3f}"
+                f"completion={record.completion_rate:.3f} "
+                f"cmd_vx=[{record.command_vx_min_mps},{record.command_vx_max_mps}]"
             )
 
     report = build_eval_report(
@@ -165,8 +201,9 @@ def main(argv=None):
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2))
     print(f"[eval] wrote {out_path}")
-    print(f"[eval] initial_max_speed_mps={report.get('initial_max_speed_mps')}")
+    print(f"[eval] highest_passing_speed_mps={report.get('highest_passing_speed_mps')}")
     print("[eval] NOTE: fixed-speed metrics are authoritative; do not use mixed Train/mean_reward alone.")
+    print("[eval] NOTE: post-fix CoT is not comparable to historical JSON CoT.")
 
     if args.logger == "wandb":
         try:
@@ -197,6 +234,9 @@ def _eval_one_speed(
     seed,
     global_seed,
     mass,
+    contact_sensor=None,
+    foot_body_ids=None,
+    foot_sensor_ids=None,
 ):
     """Run one independent fixed-speed evaluation."""
     import torch
@@ -210,7 +250,8 @@ def _eval_one_speed(
     if hasattr(env.unwrapped, "seed"):
         env.unwrapped.seed(run_seed)
 
-    # Set fixed command.
+    # Fixed command mode: pin via cfg + degenerate ranges; re-apply every call.
+    cmd_term.cfg.fixed_speed_mps = float(target_speed_mps)
     cmd_term.cfg.ranges.lin_vel_x = (
         float(target_speed_mps),
         float(target_speed_mps),
@@ -232,13 +273,14 @@ def _eval_one_speed(
 
     vx_cmd_hist = []
     vx_meas_hist = []
-    foot_slide_hist = []
     power_hist = []
     sat_vel_hits = 0
     sat_tq_hits = 0
     step_count = 0
     clip_hits = 0
     clip_total = 0
+    slide_sum = 0.0
+    slide_samples = 0
 
     timed_out = torch.zeros(num_envs, dtype=torch.bool, device=device)
     terminated = torch.zeros(num_envs, dtype=torch.bool, device=device)
@@ -258,16 +300,33 @@ def _eval_one_speed(
             obs = obs[0]
 
         vx_cmd = cmd_term.command[:, 0]
+        expected = torch.full_like(vx_cmd, float(target_speed_mps))
+        if not torch.allclose(vx_cmd, expected, atol=1e-5, rtol=0.0):
+            raise RuntimeError(
+                "Fixed-speed evaluation was contaminated by command resampling: "
+                f"target={target_speed_mps:.4f}, "
+                f"min={vx_cmd.min().item():.4f}, "
+                f"max={vx_cmd.max().item():.4f}, "
+                f"mean={vx_cmd.mean().item():.4f}"
+            )
+
         vx_meas = robot.data.root_lin_vel_b[:, 0]
         vx_cmd_hist.append(vx_cmd.detach().cpu().clone())
         vx_meas_hist.append(vx_meas.detach().cpu().clone())
 
-        feet = robot.data.body_lin_vel_w[:, :2]
-        foot_slide_hist.append(float(feet.norm(dim=-1).mean().item()))
+        if foot_body_ids is not None and foot_sensor_ids is not None and contact_sensor is not None:
+            foot_vel_xy = torch.linalg.vector_norm(
+                robot.data.body_lin_vel_w[:, foot_body_ids, :2],
+                dim=-1,
+            )
+            contact = contact_sensor.data.current_contact_time[:, foot_sensor_ids] > 0.0
+            slide_sum += float((foot_vel_xy * contact).sum().item())
+            slide_samples += int(contact.sum().item())
 
         tau = robot.data.applied_torque
         omega = robot.data.joint_vel
-        power_hist.append(float((tau * omega).abs().mean().item()))
+        mechanical_power = (tau * omega).abs().sum(dim=-1).mean()
+        power_hist.append(float(mechanical_power.item()))
 
         jv = robot.data.joint_vel
         lim = robot.data.soft_joint_vel_limits
@@ -308,6 +367,7 @@ def _eval_one_speed(
         timed_out = torch.ones_like(timed_out)
         terminated = torch.zeros_like(terminated)
 
+    foot_slide = slide_sum / max(slide_samples, 1)
     n_env = num_envs
     return compute_run_metrics(
         target_speed_mps=target_speed_mps,
@@ -319,7 +379,7 @@ def _eval_one_speed(
         bad_orientation=bad_ori.cpu(),
         base_contact=base_contact.cpu(),
         base_height=base_height.cpu(),
-        foot_slide=(sum(foot_slide_hist) / len(foot_slide_hist)) if foot_slide_hist else 0.0,
+        foot_slide=foot_slide,
         joint_vel_sat=sat_vel_hits / max(n_env * max(step_count, 1), 1),
         joint_torque_sat=sat_tq_hits / max(n_env * max(step_count, 1), 1),
         action_clip_ratio=(clip_hits / clip_total) if clip_total else 0.0,
