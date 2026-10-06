@@ -261,7 +261,8 @@ def _eval_one_speed(
     cmd_term.cfg.rel_standing_envs = 0.0
 
     # Resample command with the new fixed speed.
-    cmd_term._resample_command(list(range(env.unwrapped.num_envs)))
+    with torch.inference_mode():
+        cmd_term._resample_command(list(range(env.unwrapped.num_envs)))
 
     # Get fresh observations after command change.
     obs = env.get_observations()

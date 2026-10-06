@@ -52,6 +52,37 @@ def joint_vel_limit_soft(
     return torch.sum(torch.square(excess), dim=-1)
 
 
+def startup_vx_tracking(
+    env: ManagerBasedRLEnv,
+    command_name: str = "base_velocity",
+    duration_s: float = 2.0,
+    min_command_mps: float = 2.0,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """Bounded tracking reward during the first seconds of high-speed starts."""
+    robot = env.scene[asset_cfg.name]
+
+    target_vx = env.command_manager.get_command(command_name)[:, 0]
+    measured_vx = robot.data.root_lin_vel_b[:, 0]
+    episode_age_s = env.episode_length_buf * float(env.step_dt)
+
+    active = (
+        (episode_age_s < duration_s)
+        & (target_vx >= min_command_mps)
+    )
+
+    # At target 2.7: vx=0 -> 0, vx=1 -> 0.37,
+    # vx=2 -> 0.74, vx=2.7 -> 1.
+    # Overshooting also reduces reward.
+    normalized_error = (
+        (target_vx - measured_vx).abs()
+        / target_vx.abs().clamp_min(0.5)
+    )
+    reward = (1.0 - normalized_error).clamp(min=0.0, max=1.0)
+
+    return reward * active.float()
+
+
 def stand_still(
     env: ManagerBasedRLEnv,
     command_name: str = "base_velocity",

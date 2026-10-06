@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import MISSING
+from collections import deque
+from dataclasses import MISSING, replace
 
 import torch
 
@@ -32,6 +33,15 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
         if n == 0:
             return
 
+        if hasattr(self, "_hs_command_age_s"):
+            age = self._hs_command_age_s
+            # Eval steps run under inference_mode; out-of-band resample must not
+            # in-place-update an inference tensor.
+            if age.is_inference():
+                age = age.detach().clone()
+                self._hs_command_age_s = age
+            age[env_ids] = 0.0
+
         fixed_speed = getattr(self.cfg, "fixed_speed_mps", None)
         if fixed_speed is not None:
             self.vel_command_b[env_ids, 0] = float(fixed_speed)
@@ -40,6 +50,9 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
             self.is_standing_env[env_ids] = False
             if self.cfg.heading_command:
                 self.is_heading_env[env_ids] = False
+            if not hasattr(self, "_hs_target_vx"):
+                self._hs_target_vx = torch.zeros(self.num_envs, device=self.device)
+            self._hs_target_vx[env_ids] = float(fixed_speed)
             return
 
         ranges = self.cfg.ranges
@@ -58,6 +71,11 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
         )
         r = torch.empty(n, device=self.device)
         self.vel_command_b[env_ids, 0] = cmd[:, 0]
+        if not hasattr(self, "_hs_target_vx"):
+            self._hs_target_vx = torch.zeros(
+                self.num_envs, device=self.device
+            )
+        self._hs_target_vx[env_ids] = cmd[:, 0]
         self.vel_command_b[env_ids, 1] = cmd[:, 1]
         self.vel_command_b[env_ids, 2] = cmd[:, 2]
         if self.cfg.heading_command:
@@ -67,10 +85,60 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
 
     def compute(self, dt: float):
         """Update commands + rolling frontier curriculum every step."""
+        if not hasattr(self, "_hs_command_age_s"):
+            self._hs_command_age_s = torch.zeros(
+                self.num_envs, device=self.device
+            )
+        self._hs_command_age_s.add_(dt)
         super().compute(dt)
         if getattr(self.cfg, "fixed_speed_mps", None) is not None:
             return
         self._update_frontier_metrics()
+
+    def _update_command(self):
+        fixed_speed = getattr(self.cfg, "fixed_speed_mps", None)
+        if fixed_speed is not None:
+            # Fixed-speed eval: keep pinned command; parent only handles standing/heading.
+            super()._update_command()
+            return
+
+        # Restore the sampled target before inherited standing/heading handling.
+        if hasattr(self, "_hs_target_vx"):
+            self.vel_command_b[:, 0] = self._hs_target_vx
+
+        super()._update_command()
+
+        # Effective final target: includes standing environments.
+        self._hs_effective_target_vx = self.vel_command_b[:, 0].clone()
+
+        accel = float(self.cfg.vx_accel_limit_mps2)
+        if accel <= 0.0:
+            return
+
+        if not hasattr(self, "_hs_applied_vx"):
+            self._hs_applied_vx = torch.zeros(
+                self.num_envs, device=self.device
+            )
+
+        lengths = self._env.episode_length_buf
+
+        # Only reset ramp state for environments that start a new episode.
+        # Ordinary command resampling continues from the previous command.
+        reset = lengths <= 1
+        if hasattr(self, "_hs_ramp_last_episode_length"):
+            reset = reset | (
+                lengths < self._hs_ramp_last_episode_length
+            )
+        self._hs_applied_vx[reset] = 0.0
+
+        max_delta = accel * float(self._env.step_dt)
+        delta = (
+            self._hs_effective_target_vx - self._hs_applied_vx
+        ).clamp(min=-max_delta, max=max_delta)
+
+        self._hs_applied_vx.add_(delta)
+        self.vel_command_b[:, 0] = self._hs_applied_vx
+        self._hs_ramp_last_episode_length = lengths.clone()
 
     def _update_frontier_metrics(self):
         env = self._env
@@ -120,7 +188,13 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
         except Exception:  # noqa: BLE001
             clip_ratio = 0.0
 
-        vx_cmd = self.command[:, 0]
+        # Actual command seen by policy, rewards, and gait phase.
+        vx_applied = self.command[:, 0]
+
+        # Keep curriculum and existing diagnostics against the final target.
+        vx_cmd = getattr(
+            self, "_hs_effective_target_vx", vx_applied
+        )
         vx_meas = robot.data.root_lin_vel_b[:, 0]
         frontier_min_frac = float(getattr(hs, "frontier_min_frac", 1.0)) if hs else 1.0
         iter_stats = compute_frontier_stats(
@@ -134,7 +208,153 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
             current_max_speed_mps=float(state.current_max_speed_mps),
             min_frac=frontier_min_frac,
         )
-        apply_rolling_frontier_step(state, iter_stats)
+        # Capture the sampling frontier before a possible promotion.
+        diag_frontier = vx_cmd >= float(state.current_max_speed_mps) * float(frontier_min_frac)
+
+        # Preserve full-process statistics separately.
+        if not hasattr(self, "_hs_full_history"):
+            self._hs_full_history = deque(maxlen=state.rolling_window)
+        self._hs_full_history.append(iter_stats)
+
+        warmup_s = float(self.cfg.gate_warmup_s)
+        gate_n = iter_stats.n_frontier
+        gate_rmse = iter_stats.rmse_mps
+        gate_sat = iter_stats.saturation_rate
+        steady_vel_logs = {}
+
+        if warmup_s <= 0.0:
+            apply_rolling_frontier_step(state, iter_stats)
+        else:
+            episode_age_s = env.episode_length_buf * float(env.step_dt)
+            steady = (
+                diag_frontier
+                & (episode_age_s >= warmup_s)
+                & (self._hs_command_age_s >= warmup_s)
+            )
+            gate_n = int(steady.sum().item())
+
+            if gate_n > 0:
+                error = vx_cmd[steady] - vx_meas[steady]
+                gate_rmse = float(error.square().mean().sqrt().item())
+
+                # Same exceedance definition, but genuinely steady-frontier-only.
+                tolerance_rel = float(
+                    self.cfg.gate_vel_tolerance_rel
+                )
+                if tolerance_rel < 0.0:
+                    raise ValueError(
+                        "gate_vel_tolerance_rel must be non-negative"
+                    )
+
+                steady_ratio = (
+                    jv[steady].abs() / lim[steady].clamp_min(1e-6)
+                )
+
+                strict_vel_sat = float(
+                    (steady_ratio > 1.0)
+                    .any(dim=1).float().mean().item()
+                )
+                vel_sat = float(
+                    (steady_ratio > 1.0 + tolerance_rel)
+                    .any(dim=1).float().mean().item()
+                )
+
+                steady_vel_logs[
+                    "Diagnostics/gate/strict_vel_sat_rate"
+                ] = strict_vel_sat
+                steady_vel_logs[
+                    "Diagnostics/gate/tolerant_vel_sat_rate"
+                ] = vel_sat
+                steady_vel_logs[
+                    "Diagnostics/gate/vel_tolerance_rel"
+                ] = tolerance_rel
+
+                effort_lim = getattr(
+                    robot.data, "soft_joint_effort_limits", None
+                )
+                if effort_lim is not None:
+                    torque_sat = float(
+                        (at[steady].abs() > effort_lim[steady])
+                        .any(dim=1).float().mean().item()
+                    )
+                else:
+                    torque_sat = 0.0
+
+                gate_sat = max(vel_sat, torque_sat)
+
+                gate_stats = replace(
+                    iter_stats,
+                    rmse_mps=gate_rmse,
+                    saturation_rate=gate_sat,
+                    joint_vel_sat_rate=vel_sat,
+                    joint_torque_sat_rate=torque_sat,
+                    commanded_vx_mps=float(vx_cmd[steady].mean().item()),
+                    measured_vx_mps=float(vx_meas[steady].mean().item()),
+                    mixed_rmse_mps=gate_rmse,
+                    n_frontier=gate_n,
+                )
+                previous_max = float(state.current_max_speed_mps)
+                apply_rolling_frontier_step(state, gate_stats)
+
+                if float(state.current_max_speed_mps) != previous_max:
+                    self._hs_full_history.clear()
+
+                # Dimensionless speed ratio: abs(joint velocity) / limit.
+                ratio = jv[steady].abs() / lim[steady].clamp_min(1e-6)
+
+                thresholds = (1.00, 1.01, 1.05, 1.10)
+
+                # Fraction of steady environments where ANY joint exceeds
+                # each threshold. Comparable to the existing gate metric.
+                any_rates = torch.stack([
+                    (ratio > threshold).any(dim=1).float().mean()
+                    for threshold in thresholds
+                ]).detach().cpu().tolist()
+
+                for threshold, value in zip(thresholds, any_rates):
+                    suffix = f"{threshold:.2f}".replace(".", "p")
+                    steady_vel_logs[
+                        f"Diagnostics/steady_vel/any_gt_{suffix}"
+                    ] = value
+
+                focus_joints = (
+                    "left_hip_pitch_joint",
+                    "right_hip_pitch_joint",
+                    "left_knee_joint",
+                    "right_knee_joint",
+                )
+
+                for joint_name in focus_joints:
+                    joint_id = robot.joint_names.index(joint_name)
+                    joint_ratio = ratio[:, joint_id]
+
+                    values = torch.stack([
+                        *[
+                            (joint_ratio > threshold).float().mean()
+                            for threshold in thresholds
+                        ],
+                        torch.quantile(joint_ratio, 0.95),
+                        torch.quantile(joint_ratio, 0.99),
+                        joint_ratio.max(),
+                    ]).detach().cpu().tolist()
+
+                    prefix = f"Diagnostics/steady_vel/{joint_name}"
+
+                    for index, threshold in enumerate(thresholds):
+                        suffix = f"{threshold:.2f}".replace(".", "p")
+                        steady_vel_logs[
+                            f"{prefix}/gt_{suffix}"
+                        ] = values[index]
+
+                    steady_vel_logs[f"{prefix}/ratio_p95"] = values[4]
+                    steady_vel_logs[f"{prefix}/ratio_p99"] = values[5]
+                    steady_vel_logs[f"{prefix}/ratio_max"] = values[6]
+            else:
+                # Missing samples must not count as a passing evaluation.
+                state.history.clear()
+                state.consecutive_pass_iterations = 0
+                state.last_gate_reason = "window_incomplete"
+                state.frozen = True
 
         # apply held/promoted max to command ranges (no auto-degrade)
         new_max = min(state.current_max_speed_mps, state.target_speed_mps)
@@ -144,7 +364,8 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
             self.cfg.ranges.ang_vel_z = (-0.25, 0.25)
 
         # per-iteration numeric logs for rsl_rl / W&B
-        hist = state.history
+        # Existing frontier metrics remain full-process metrics.
+        hist = self._hs_full_history
         if len(hist) > 0:
             frontier_rmse = sum(x.rmse_mps for x in hist) / len(hist)
             frontier_comp = sum(x.completion_rate for x in hist) / len(hist)
@@ -157,6 +378,139 @@ class HighSpeedUniformVelocityCommand(UniformVelocityCommand):
             frontier_sat = iter_stats.saturation_rate
 
         log = env.extras.setdefault("log", {})
+        log.update(steady_vel_logs)
+        log["Diagnostics/gate/warmup_s"] = warmup_s
+        log["Diagnostics/gate/steady_n"] = float(gate_n)
+
+        # Keep sums for sample-weighted analysis.
+        if gate_n > 0:
+            log["Diagnostics/gate/rmse_instant_mps"] = gate_rmse
+            log["Diagnostics/gate/saturation_rate"] = gate_sat
+
+        if state.history:
+            log["Diagnostics/gate/rolling_rmse_mps"] = (
+                sum(x.rmse_mps for x in state.history)
+                / len(state.history)
+            )
+            log["Diagnostics/gate/rolling_saturation_rate"] = (
+                sum(x.saturation_rate for x in state.history)
+                / len(state.history)
+            )
+
+        log["Diagnostics/ramp/accel_limit_mps2"] = float(
+            self.cfg.vx_accel_limit_mps2
+        )
+        log["Diagnostics/ramp/active_rate"] = float(
+            ((vx_cmd - vx_applied).abs() > 1e-4)
+            .float().mean().item()
+        )
+        log["Diagnostics/ramp/applied_command_mean_mps"] = float(
+            vx_applied.mean().item()
+        )
+        log["Diagnostics/ramp/applied_command_rmse_mps"] = float(
+            (vx_applied - vx_meas).square().mean().sqrt().item()
+        )
+        with torch.no_grad():
+            episode_age_s = env.episode_length_buf * float(env.step_dt)
+            command_age_s = self._hs_command_age_s
+
+            # Mutually exclusive groups inside the frontier.
+            groups = {
+                "reset_first2s": diag_frontier & (episode_age_s < 2.0),
+                "resample_first2s": (
+                    diag_frontier
+                    & (episode_age_s >= 2.0)
+                    & (command_age_s < 2.0)
+                ),
+                "steady_after2s": (
+                    diag_frontier
+                    & (episode_age_s >= 2.0)
+                    & (command_age_s >= 2.0)
+                ),
+                "reset_0p0_to_0p5s": (
+                    diag_frontier & (episode_age_s < 0.5)
+                ),
+                "reset_0p5_to_1p0s": (
+                    diag_frontier
+                    & (episode_age_s >= 0.5)
+                    & (episode_age_s < 1.0)
+                ),
+                "reset_1p0_to_2p0s": (
+                    diag_frontier
+                    & (episode_age_s >= 1.0)
+                    & (episode_age_s < 2.0)
+                ),
+            }
+
+            error = vx_cmd - vx_meas
+
+            for name, mask in groups.items():
+                count = int(mask.sum().item())
+                prefix = f"Diagnostics/phase/{name}"
+                log[f"{prefix}/count"] = float(count)
+
+                # Log sums as well as counts for weighted comparisons.
+                # Empty groups contribute zero, not a fake zero RMSE.
+                values = torch.stack([
+                    error[mask].sum(),
+                    error[mask].square().sum(),
+                ]).detach().cpu().tolist()
+
+                log[f"{prefix}/error_sum"] = values[0]
+                log[f"{prefix}/squared_error_sum"] = values[1]
+
+        # Diagnostic only: does not change rewards or promotion gates.
+        with torch.no_grad():
+            n_diag = int(diag_frontier.sum().item())
+            log["Diagnostics/frontier_n"] = float(n_diag)
+
+            if n_diag > 0:
+                # Positive error = moving slower than commanded.
+                error = vx_cmd[diag_frontier] - vx_meas[diag_frontier]
+                bias = error.mean()
+                error_std = error.std(unbiased=False)
+                rmse = error.square().mean().sqrt()
+
+                speed_stats = torch.stack([
+                    bias,
+                    error_std,
+                    rmse,
+                    (error > 0.5).float().mean(),
+                ]).detach().cpu().tolist()
+
+                log["Diagnostics/frontier_bias_mps"] = speed_stats[0]
+                log["Diagnostics/frontier_error_std_mps"] = speed_stats[1]
+                log["Diagnostics/frontier_rmse_instant_mps"] = speed_stats[2]
+                log["Diagnostics/frontier_under_by_0p5_rate"] = speed_stats[3]
+
+                # Keep original saturation metrics unchanged.
+                # These new metrics really are frontier-only.
+                vel_ratio = (
+                    jv.abs() / lim.clamp_min(1e-6)
+                )[diag_frontier]
+
+                sat_by_joint = (vel_ratio > 1.0).float().mean(dim=0)
+                near_by_joint = (vel_ratio > 0.9).float().mean(dim=0)
+
+                joint_stats = torch.stack([
+                    sat_by_joint, near_by_joint
+                ]).detach().cpu().tolist()
+
+                log["Diagnostics/frontier_any_joint_sat_rate"] = float(
+                    (vel_ratio > 1.0).any(dim=1).float().mean().item()
+                )
+
+                for joint_id, joint_name in enumerate(robot.joint_names):
+                    log[
+                        f"Diagnostics/joint_sat/{joint_name}"
+                    ] = joint_stats[0][joint_id]
+                    log[
+                        f"Diagnostics/joint_near_limit/{joint_name}"
+                    ] = joint_stats[1][joint_id]
+                    log[
+                        f"Diagnostics/joint_vel_limit_rad_s/{joint_name}"
+                    ] = float(lim[..., joint_id].mean().item())
+
         log["Curriculum/current_max_speed_mps"] = float(state.current_max_speed_mps)
         log["Curriculum/target_speed_mps"] = float(state.target_speed_mps)
         log["Curriculum/frontier_speed_rmse_mps"] = float(frontier_rmse)
@@ -221,6 +575,16 @@ class HighSpeedCurriculumParams:
 @configclass
 class HighSpeedUniformVelocityCommandCfg(UniformLevelVelocityCommandCfg):
     class_type: type = HighSpeedUniformVelocityCommand
+
+    # 0 disables smoothing; positive values limit forward command acceleration.
+    vx_accel_limit_mps2: float = 0.0
+
+    # 0 keeps the original evaluation.
+    gate_warmup_s: float = 0.0
+
+    # Relative tolerance for velocity exceedance in the curriculum gate.
+    # 0.0 retains strict comparison.
+    gate_vel_tolerance_rel: float = 0.0
 
     # None: mixed sampling during training;
     # float: evaluation (or operator freeze) pins all envs to this speed.

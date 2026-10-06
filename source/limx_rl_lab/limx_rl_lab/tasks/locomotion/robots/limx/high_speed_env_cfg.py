@@ -71,6 +71,16 @@ class HighSpeedRewardsCfg(BaseRewardsCfg):
         params={"soft_ratio": 0.90},
     )
 
+    startup_vx_tracking = RewTerm(
+        func=mdp.startup_vx_tracking,
+        weight=0.0,
+        params={
+            "command_name": "base_velocity",
+            "duration_s": 2.0,
+            "min_command_mps": 2.0,
+        },
+    )
+
 
 @configclass
 class RobotHighSpeedEnvCfg(RobotEnvCfg):
@@ -83,6 +93,22 @@ class RobotHighSpeedEnvCfg(RobotEnvCfg):
     def __post_init__(self):
         super().__post_init__()
 
+        self.commands.base_velocity.vx_accel_limit_mps2 = float(
+            os.getenv("LIMX_HS_VX_ACCEL_LIMIT", "0.0")
+        )
+
+        self.commands.base_velocity.gate_warmup_s = float(
+            os.getenv("LIMX_HS_GATE_WARMUP_S", "0.0")
+        )
+
+        self.commands.base_velocity.gate_vel_tolerance_rel = float(
+            os.getenv("LIMX_HS_GATE_VEL_TOLERANCE_REL", "0.0")
+        )
+
+        self.rewards.startup_vx_tracking.weight = float(
+            os.getenv("LIMX_HS_STARTUP_TRACK_WEIGHT", "0.0")
+        )
+
         self.actions.JointPositionAction.scale = float(
             os.getenv("LIMX_HS_ACTION_SCALE", "0.25")
         )
@@ -93,6 +119,10 @@ class RobotHighSpeedEnvCfg(RobotEnvCfg):
 
         self.rewards.track_lin_vel_xy.weight = float(
             os.getenv("LIMX_HS_TRACK_LIN_VEL_WEIGHT", "1.5")
+        )
+
+        self.rewards.track_lin_vel_xy.params["std"] = float(
+            os.getenv("LIMX_HS_TRACK_LIN_VEL_STD", "0.5")
         )
 
         hs = self.commands.base_velocity.high_speed

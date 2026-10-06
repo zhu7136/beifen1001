@@ -204,7 +204,7 @@ def rolling_mean(history: deque, key: str) -> float:
 def evaluate_rolling_frontier_gates(state: CurriculumState) -> SpeedGateResult:
     """Evaluate promotion gates on rolling means of available frontier history."""
     hist = state.history
-    if len(hist) == 0:
+    if len(hist) < state.rolling_window:
         return SpeedGateResult(
             gates_pass=False,
             completion_pass=False,
