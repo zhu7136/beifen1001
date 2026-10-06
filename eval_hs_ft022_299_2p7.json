@@ -1,0 +1,466 @@
+{
+  "checkpoint": "/root/code/beifen1001/logs/rsl_rl/limx_hu_d04_01_flat_velocity_hs/2026-10-06_11-13-34_hs-ft022-steadygate-tol1pct-2p7-to-2p8/model_299.pt",
+  "speeds_mps": [
+    2.7
+  ],
+  "gates": {
+    "completion_rate_min": 0.95,
+    "orientation_term_rate_max": 0.02,
+    "speed_rmse_max_mps": 0.25
+  },
+  "summary": [
+    {
+      "target_speed_mps": 2.7,
+      "num_seeds": 5,
+      "mean_vx_mps": 2.657887970068314,
+      "rmse_vx_mps": 0.40620761858417964,
+      "completion_rate": 1.0,
+      "bad_orientation_rate": 0.0,
+      "base_contact_rate": 0.0,
+      "base_height_rate": 0.0,
+      "foot_slide_mean": 0.239087399686512,
+      "joint_vel_saturation_rate": 0.2100500500500501,
+      "joint_torque_saturation_rate": 0.6731931931931932,
+      "action_clip_ratio": 0.1324283870967742,
+      "mean_total_joint_power_w": 913.1090812052287,
+      "cost_of_transport": 0.6612259524736371,
+      "command_vx_min_mps": 2.700000047683716,
+      "command_vx_max_mps": 2.700000047683716,
+      "command_vx_mean_mps": 2.700000047683716,
+      "gates": {
+        "completion_rate_min": 0.97,
+        "orientation_term_rate_max": 0.02,
+        "speed_rmse_max_mps": 0.25,
+        "completion_pass": true,
+        "orientation_pass": true,
+        "rmse_pass": false
+      },
+      "gates_pass": false,
+      "seeds": [
+        {
+          "target_speed_mps": 2.7,
+          "seed": 0,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.6587924036021167,
+          "rmse_vx_mps": 0.40439725098920165,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.2415864211743668,
+          "joint_vel_saturation_rate": 0.21061061061061062,
+          "joint_torque_saturation_rate": 0.6728728728728729,
+          "action_clip_ratio": 0.1323741935483871,
+          "mean_total_joint_power_w": 913.8905853607514,
+          "cost_of_transport": 0.661566725407888,
+          "command_vx_min_mps": 2.700000047683716,
+          "command_vx_max_mps": 2.700000047683716,
+          "command_vx_mean_mps": 2.700000047683716,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 52.96233367919922,
+            "phase_stats": {
+              "full": {
+                "count": 4995,
+                "error_sum": 205.83218050003052,
+                "squared_error_sum": 816.868002420335,
+                "vx_sum": 13280.668062627316,
+                "gt_1pct_hits": 11,
+                "gt_5pct_hits": 0
+              },
+              "startup": {
+                "count": 495,
+                "error_sum": 375.068421125412,
+                "squared_error_sum": 807.432279516579,
+                "vx_sum": 961.4316028952599,
+                "gt_1pct_hits": 1,
+                "gt_5pct_hits": 0
+              },
+              "steady": {
+                "count": 4500,
+                "error_sum": -169.23624062538147,
+                "squared_error_sum": 9.43572290375596,
+                "vx_sum": 12319.236459732056,
+                "gt_1pct_hits": 10,
+                "gt_5pct_hits": 0
+              }
+            },
+            "warmup_s": 2.0,
+            "gt_1pct_rate": 0.0022022022022022024,
+            "gt_5pct_rate": 0.0,
+            "full": {
+              "count": 4995,
+              "rmse_vx_mps": 0.4043972522430001,
+              "mean_vx_mps": 2.6587924049303937,
+              "bias_mps": 0.041207643743749856,
+              "gt_1pct_rate": 0.0022022022022022024,
+              "gt_5pct_rate": 0.0
+            },
+            "startup": {
+              "count": 495,
+              "rmse_vx_mps": 1.2771751337446697,
+              "mean_vx_mps": 1.9422860664550705,
+              "bias_mps": 0.7577139820715394,
+              "gt_1pct_rate": 0.00202020202020202,
+              "gt_5pct_rate": 0.0
+            },
+            "steady": {
+              "count": 4500,
+              "rmse_vx_mps": 0.045791127000170774,
+              "mean_vx_mps": 2.737608102162679,
+              "bias_mps": -0.037608053472306995,
+              "gt_1pct_rate": 0.0022222222222222222,
+              "gt_5pct_rate": 0.0
+            }
+          }
+        },
+        {
+          "target_speed_mps": 2.7,
+          "seed": 1,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.65774460664845,
+          "rmse_vx_mps": 0.40655990271515796,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.2371426368073102,
+          "joint_vel_saturation_rate": 0.2092092092092092,
+          "joint_torque_saturation_rate": 0.6718718718718719,
+          "action_clip_ratio": 0.13235483870967743,
+          "mean_total_joint_power_w": 912.4771857673103,
+          "cost_of_transport": 0.6608039779973307,
+          "command_vx_min_mps": 2.700000047683716,
+          "command_vx_max_mps": 2.700000047683716,
+          "command_vx_mean_mps": 2.700000047683716,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 52.96233367919922,
+            "phase_stats": {
+              "full": {
+                "count": 4995,
+                "error_sum": 211.06593298912048,
+                "squared_error_sum": 825.6283282130898,
+                "vx_sum": 13275.434336662292,
+                "gt_1pct_hits": 9,
+                "gt_5pct_hits": 0
+              },
+              "startup": {
+                "count": 495,
+                "error_sum": 379.2436900138855,
+                "squared_error_sum": 816.2884528124996,
+                "vx_sum": 957.2563371658325,
+                "gt_1pct_hits": 0,
+                "gt_5pct_hits": 0
+              },
+              "steady": {
+                "count": 4500,
+                "error_sum": -168.17775702476501,
+                "squared_error_sum": 9.339875400590245,
+                "vx_sum": 12318.17799949646,
+                "gt_1pct_hits": 9,
+                "gt_5pct_hits": 0
+              }
+            },
+            "warmup_s": 2.0,
+            "gt_1pct_rate": 0.0018018018018018018,
+            "gt_5pct_rate": 0.0,
+            "full": {
+              "count": 4995,
+              "rmse_vx_mps": 0.40655990530205655,
+              "mean_vx_mps": 2.657744611944403,
+              "bias_mps": 0.042255442039863964,
+              "gt_1pct_rate": 0.0018018018018018018,
+              "gt_5pct_rate": 0.0
+            },
+            "startup": {
+              "count": 495,
+              "rmse_vx_mps": 1.2841602631445161,
+              "mean_vx_mps": 1.933851186193601,
+              "bias_mps": 0.7661488687149202,
+              "gt_1pct_rate": 0.0,
+              "gt_5pct_rate": 0.0
+            },
+            "steady": {
+              "count": 4500,
+              "rmse_vx_mps": 0.045557961618117114,
+              "mean_vx_mps": 2.7373728887769913,
+              "bias_mps": -0.03737283489439223,
+              "gt_1pct_rate": 0.002,
+              "gt_5pct_rate": 0.0
+            }
+          }
+        },
+        {
+          "target_speed_mps": 2.7,
+          "seed": 2,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.6562246815123416,
+          "rmse_vx_mps": 0.4065752335255008,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.23653331083843676,
+          "joint_vel_saturation_rate": 0.20960960960960962,
+          "joint_torque_saturation_rate": 0.6712712712712713,
+          "action_clip_ratio": 0.1324516129032258,
+          "mean_total_joint_power_w": 912.8895327395267,
+          "cost_of_transport": 0.6614808854625167,
+          "command_vx_min_mps": 2.700000047683716,
+          "command_vx_max_mps": 2.700000047683716,
+          "command_vx_mean_mps": 2.700000047683716,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 52.96233367919922,
+            "phase_stats": {
+              "full": {
+                "count": 4995,
+                "error_sum": 218.65795373916626,
+                "squared_error_sum": 825.6905862985586,
+                "vx_sum": 13267.842264205217,
+                "gt_1pct_hits": 5,
+                "gt_5pct_hits": 0
+              },
+              "startup": {
+                "count": 495,
+                "error_sum": 381.1880373954773,
+                "squared_error_sum": 816.6921057000873,
+                "vx_sum": 955.3119840919971,
+                "gt_1pct_hits": 0,
+                "gt_5pct_hits": 0
+              },
+              "steady": {
+                "count": 4500,
+                "error_sum": -162.53008365631104,
+                "squared_error_sum": 8.99848059847136,
+                "vx_sum": 12312.53028011322,
+                "gt_1pct_hits": 5,
+                "gt_5pct_hits": 0
+              }
+            },
+            "warmup_s": 2.0,
+            "gt_1pct_rate": 0.001001001001001001,
+            "gt_5pct_rate": 0.0,
+            "full": {
+              "count": 4995,
+              "rmse_vx_mps": 0.4065752337272797,
+              "mean_vx_mps": 2.656224677518562,
+              "bias_mps": 0.0437753661139472,
+              "gt_1pct_rate": 0.001001001001001001,
+              "gt_5pct_rate": 0.0
+            },
+            "startup": {
+              "count": 495,
+              "rmse_vx_mps": 1.284477731149263,
+              "mean_vx_mps": 1.9299232001858528,
+              "bias_mps": 0.7700768432231865,
+              "gt_1pct_rate": 0.0,
+              "gt_5pct_rate": 0.0
+            },
+            "steady": {
+              "count": 4500,
+              "rmse_vx_mps": 0.04471758440720896,
+              "mean_vx_mps": 2.7361178400251602,
+              "bias_mps": -0.03611779636806912,
+              "gt_1pct_rate": 0.0011111111111111111,
+              "gt_5pct_rate": 0.0
+            }
+          }
+        },
+        {
+          "target_speed_mps": 2.7,
+          "seed": 3,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.657641948705112,
+          "rmse_vx_mps": 0.40648108060264143,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.24264122063607568,
+          "joint_vel_saturation_rate": 0.21021021021021022,
+          "joint_torque_saturation_rate": 0.6796796796796797,
+          "action_clip_ratio": 0.13238064516129033,
+          "mean_total_joint_power_w": 913.1907751501501,
+          "cost_of_transport": 0.6613462951811642,
+          "command_vx_min_mps": 2.700000047683716,
+          "command_vx_max_mps": 2.700000047683716,
+          "command_vx_mean_mps": 2.700000047683716,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 52.96233367919922,
+            "phase_stats": {
+              "full": {
+                "count": 4995,
+                "error_sum": 211.57870364189148,
+                "squared_error_sum": 825.3082163136714,
+                "vx_sum": 13274.921560555696,
+                "gt_1pct_hits": 8,
+                "gt_5pct_hits": 1
+              },
+              "startup": {
+                "count": 495,
+                "error_sum": 380.88577818870544,
+                "squared_error_sum": 815.6750205850112,
+                "vx_sum": 955.6142380535603,
+                "gt_1pct_hits": 0,
+                "gt_5pct_hits": 0
+              },
+              "steady": {
+                "count": 4500,
+                "error_sum": -169.30707454681396,
+                "squared_error_sum": 9.633195728660212,
+                "vx_sum": 12319.307322502136,
+                "gt_1pct_hits": 8,
+                "gt_5pct_hits": 1
+              }
+            },
+            "warmup_s": 2.0,
+            "gt_1pct_rate": 0.0016016016016016017,
+            "gt_5pct_rate": 0.0002002002002002002,
+            "full": {
+              "count": 4995,
+              "rmse_vx_mps": 0.4064810821340486,
+              "mean_vx_mps": 2.6576419540652045,
+              "bias_mps": 0.0423580988272055,
+              "gt_1pct_rate": 0.0016016016016016017,
+              "gt_5pct_rate": 0.0002002002002002002
+            },
+            "startup": {
+              "count": 495,
+              "rmse_vx_mps": 1.283677655961248,
+              "mean_vx_mps": 1.9305338142496167,
+              "bias_mps": 0.7694662185630413,
+              "gt_1pct_rate": 0.0,
+              "gt_5pct_rate": 0.0
+            },
+            "steady": {
+              "count": 4500,
+              "rmse_vx_mps": 0.04626780913253287,
+              "mean_vx_mps": 2.737623849444919,
+              "bias_mps": -0.03762379434373644,
+              "gt_1pct_rate": 0.0017777777777777779,
+              "gt_5pct_rate": 0.00022222222222222223
+            }
+          }
+        },
+        {
+          "target_speed_mps": 2.7,
+          "seed": 4,
+          "num_episodes": 5,
+          "mean_vx_mps": 2.659036209873549,
+          "rmse_vx_mps": 0.4070246250883964,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.23753340897637049,
+          "joint_vel_saturation_rate": 0.21061061061061062,
+          "joint_torque_saturation_rate": 0.6702702702702703,
+          "action_clip_ratio": 0.1325806451612903,
+          "mean_total_joint_power_w": 913.0973270084049,
+          "cost_of_transport": 0.6609318783192863,
+          "command_vx_min_mps": 2.700000047683716,
+          "command_vx_max_mps": 2.700000047683716,
+          "command_vx_mean_mps": 2.700000047683716,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 52.96233367919922,
+            "phase_stats": {
+              "full": {
+                "count": 4995,
+                "error_sum": 204.61436414718628,
+                "squared_error_sum": 827.5168844134641,
+                "vx_sum": 13281.885858207941,
+                "gt_1pct_hits": 4,
+                "gt_5pct_hits": 0
+              },
+              "startup": {
+                "count": 495,
+                "error_sum": 380.4139084815979,
+                "squared_error_sum": 817.5664209547103,
+                "vx_sum": 956.0861050188541,
+                "gt_1pct_hits": 0,
+                "gt_5pct_hits": 0
+              },
+              "steady": {
+                "count": 4500,
+                "error_sum": -175.79954433441162,
+                "squared_error_sum": 9.950463458753802,
+                "vx_sum": 12325.799753189087,
+                "gt_1pct_hits": 4,
+                "gt_5pct_hits": 0
+              }
+            },
+            "warmup_s": 2.0,
+            "gt_1pct_rate": 0.0008008008008008008,
+            "gt_5pct_rate": 0.0,
+            "full": {
+              "count": 4995,
+              "rmse_vx_mps": 0.40702462570294373,
+              "mean_vx_mps": 2.6590362078494376,
+              "bias_mps": 0.040963836666103356,
+              "gt_1pct_rate": 0.0008008008008008008,
+              "gt_5pct_rate": 0.0
+            },
+            "startup": {
+              "count": 495,
+              "rmse_vx_mps": 1.2851651003906235,
+              "mean_vx_mps": 1.93148708084617,
+              "bias_mps": 0.7685129464274705,
+              "gt_1pct_rate": 0.0,
+              "gt_5pct_rate": 0.0
+            },
+            "steady": {
+              "count": 4500,
+              "rmse_vx_mps": 0.04702354837680042,
+              "mean_vx_mps": 2.7390666118197973,
+              "bias_mps": -0.039066565407647025,
+              "gt_1pct_rate": 0.0008888888888888889,
+              "gt_5pct_rate": 0.0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "highest_passing_speed_mps": null,
+  "note": "Fixed-speed eval is authoritative for high-speed capability claims. Do not use mixed Train/mean_reward alone as acceptance evidence. CoT after the total-power/mass fix is not comparable to historical JSON CoT.",
+  "wandb_metrics": {
+    "eval/2.7/mean_vx": 2.657887970068314,
+    "eval/2.7/rmse_vx": 0.40620761858417964,
+    "eval/2.7/episode_completion": 1.0,
+    "eval/2.7/bad_orientation_rate": 0.0,
+    "eval/2.7/base_contact_rate": 0.0,
+    "eval/2.7/base_height_rate": 0.0,
+    "eval/2.7/foot_slide": 0.239087399686512,
+    "eval/2.7/joint_vel_saturation_rate": 0.2100500500500501,
+    "eval/2.7/joint_torque_saturation_rate": 0.6731931931931932,
+    "eval/2.7/action_clip_ratio": 0.1324283870967742,
+    "eval/2.7/mean_total_joint_power_w": 913.1090812052287,
+    "eval/2.7/cost_of_transport": 0.6612259524736371,
+    "eval/2.7/command_vx_min_mps": 2.700000047683716,
+    "eval/2.7/command_vx_max_mps": 2.700000047683716,
+    "eval/2.7/command_vx_mean_mps": 2.700000047683716,
+    "eval/2.7/gates_pass": 0.0,
+    "eval/2.7/full/rmse_vx": 0.4062086732118817,
+    "eval/2.7/full/mean_vx": 2.6578879712616,
+    "eval/2.7/full/sample_count": 24975,
+    "eval/2.7/full/bias_mps": 0.04211207747817398,
+    "eval/2.7/full/gt_1pct_rate": 0.0014814814814814814,
+    "eval/2.7/full/gt_5pct_rate": 4.004004004004004e-05,
+    "eval/2.7/startup/rmse_vx": 1.2829344960043496,
+    "eval/2.7/startup/mean_vx": 1.9336162695860621,
+    "eval/2.7/startup/sample_count": 2475,
+    "eval/2.7/startup/bias_mps": 0.7663837718000316,
+    "eval/2.7/startup/gt_1pct_rate": 0.00040404040404040404,
+    "eval/2.7/startup/gt_5pct_rate": 0.0,
+    "eval/2.7/steady/rmse_vx": 0.04587797248752224,
+    "eval/2.7/steady/mean_vx": 2.7375578584459093,
+    "eval/2.7/steady/sample_count": 22500,
+    "eval/2.7/steady/bias_mps": -0.03755780889723036,
+    "eval/2.7/steady/gt_1pct_rate": 0.0016,
+    "eval/2.7/steady/gt_5pct_rate": 4.4444444444444447e-05
+  }
+}

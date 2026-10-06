@@ -1,0 +1,183 @@
+{
+  "checkpoint": "/root/code/beifen1001/logs/rsl_rl/limx_hu_d04_01_flat_velocity_hs/2026-10-04_20-53-08_hs-2p4-to-2p8-ft-002/model_900.pt",
+  "speeds_mps": [
+    2.4
+  ],
+  "gates": {
+    "completion_rate_min": 0.95,
+    "orientation_term_rate_max": 0.02,
+    "speed_rmse_max_mps": 0.25
+  },
+  "summary": [
+    {
+      "target_speed_mps": 2.4,
+      "num_seeds": 5,
+      "mean_vx_mps": 2.3652742739285344,
+      "rmse_vx_mps": 0.3757373905502067,
+      "completion_rate": 1.0,
+      "bad_orientation_rate": 0.0,
+      "base_contact_rate": 0.0,
+      "base_height_rate": 0.0,
+      "foot_slide_mean": 0.24906827914687008,
+      "joint_vel_saturation_rate": 0.27578749999999996,
+      "joint_torque_saturation_rate": 0.5438625,
+      "action_clip_ratio": 0.16332862903225806,
+      "mean_total_joint_power_w": 837.6020234725953,
+      "cost_of_transport": 0.6772906355684605,
+      "command_vx_min_mps": 2.4000000953674316,
+      "command_vx_max_mps": 2.4000000953674316,
+      "command_vx_mean_mps": 2.4000000953674316,
+      "gates": {
+        "completion_rate_min": 0.97,
+        "orientation_term_rate_max": 0.02,
+        "speed_rmse_max_mps": 0.25,
+        "completion_pass": true,
+        "orientation_pass": true,
+        "rmse_pass": false
+      },
+      "gates_pass": false,
+      "seeds": [
+        {
+          "target_speed_mps": 2.4,
+          "seed": 0,
+          "num_episodes": 16,
+          "mean_vx_mps": 2.3653812112300656,
+          "rmse_vx_mps": 0.37566703209077934,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.2502349106535445,
+          "joint_vel_saturation_rate": 0.2774375,
+          "joint_torque_saturation_rate": 0.5449375,
+          "action_clip_ratio": 0.16344153225806451,
+          "mean_total_joint_power_w": 837.6244918060303,
+          "cost_of_transport": 0.6772781889050608,
+          "command_vx_min_mps": 2.4000000953674316,
+          "command_vx_max_mps": 2.4000000953674316,
+          "command_vx_mean_mps": 2.4000000953674316,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 53.29814910888672
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 1,
+          "num_episodes": 16,
+          "mean_vx_mps": 2.3648290055939,
+          "rmse_vx_mps": 0.3757314019019305,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.2518655036865305,
+          "joint_vel_saturation_rate": 0.2770625,
+          "joint_torque_saturation_rate": 0.5435625,
+          "action_clip_ratio": 0.16329637096774194,
+          "mean_total_joint_power_w": 837.2747972946167,
+          "cost_of_transport": 0.6771535199553627,
+          "command_vx_min_mps": 2.4000000953674316,
+          "command_vx_max_mps": 2.4000000953674316,
+          "command_vx_mean_mps": 2.4000000953674316,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 53.29814910888672
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 2,
+          "num_episodes": 16,
+          "mean_vx_mps": 2.3651195549014954,
+          "rmse_vx_mps": 0.37568906282896397,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.2466913915621065,
+          "joint_vel_saturation_rate": 0.2740625,
+          "joint_torque_saturation_rate": 0.54325,
+          "action_clip_ratio": 0.16328225806451613,
+          "mean_total_joint_power_w": 837.5959949035645,
+          "cost_of_transport": 0.6773300727989798,
+          "command_vx_min_mps": 2.4000000953674316,
+          "command_vx_max_mps": 2.4000000953674316,
+          "command_vx_mean_mps": 2.4000000953674316,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 53.29814910888672
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 3,
+          "num_episodes": 16,
+          "mean_vx_mps": 2.3663071362702177,
+          "rmse_vx_mps": 0.37559211801721193,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.24854679393436588,
+          "joint_vel_saturation_rate": 0.2753125,
+          "joint_torque_saturation_rate": 0.5441875,
+          "action_clip_ratio": 0.1634657258064516,
+          "mean_total_joint_power_w": 838.0278943252564,
+          "cost_of_transport": 0.6773392246981064,
+          "command_vx_min_mps": 2.4000000953674316,
+          "command_vx_max_mps": 2.4000000953674316,
+          "command_vx_mean_mps": 2.4000000953674316,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 53.29814910888672
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 4,
+          "num_episodes": 16,
+          "mean_vx_mps": 2.3647344616469925,
+          "rmse_vx_mps": 0.3760073379121479,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 0.24800279589780322,
+          "joint_vel_saturation_rate": 0.2750625,
+          "joint_torque_saturation_rate": 0.543375,
+          "action_clip_ratio": 0.16315725806451614,
+          "mean_total_joint_power_w": 837.4869390335083,
+          "cost_of_transport": 0.6773521714847929,
+          "command_vx_min_mps": 2.4000000953674316,
+          "command_vx_max_mps": 2.4000000953674316,
+          "command_vx_mean_mps": 2.4000000953674316,
+          "extras": {
+            "early_term_rate": 0.0,
+            "robot_mass_kg": 53.29814910888672
+          }
+        }
+      ]
+    }
+  ],
+  "highest_passing_speed_mps": null,
+  "note": "Fixed-speed eval is authoritative for high-speed capability claims. Do not use mixed Train/mean_reward alone as acceptance evidence. CoT after the total-power/mass fix is not comparable to historical JSON CoT.",
+  "wandb_metrics": {
+    "eval/2.4/mean_vx": 2.3652742739285344,
+    "eval/2.4/rmse_vx": 0.3757373905502067,
+    "eval/2.4/episode_completion": 1.0,
+    "eval/2.4/bad_orientation_rate": 0.0,
+    "eval/2.4/base_contact_rate": 0.0,
+    "eval/2.4/base_height_rate": 0.0,
+    "eval/2.4/foot_slide": 0.24906827914687008,
+    "eval/2.4/joint_vel_saturation_rate": 0.27578749999999996,
+    "eval/2.4/joint_torque_saturation_rate": 0.5438625,
+    "eval/2.4/action_clip_ratio": 0.16332862903225806,
+    "eval/2.4/mean_total_joint_power_w": 837.6020234725953,
+    "eval/2.4/cost_of_transport": 0.6772906355684605,
+    "eval/2.4/command_vx_min_mps": 2.4000000953674316,
+    "eval/2.4/command_vx_max_mps": 2.4000000953674316,
+    "eval/2.4/command_vx_mean_mps": 2.4000000953674316,
+    "eval/2.4/gates_pass": 0.0
+  }
+}

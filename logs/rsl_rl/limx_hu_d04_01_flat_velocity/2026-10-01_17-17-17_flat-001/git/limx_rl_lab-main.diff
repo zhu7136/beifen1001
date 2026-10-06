@@ -1,0 +1,473 @@
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .gitattributes
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/base_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/d435_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_0.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_1.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_2.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_3.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_4.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/hand_transition_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_cp_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_rod_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_cp_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_rod_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_base_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_elbow_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_knee_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_metacarpal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_short_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_cp_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_rod_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_cp_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_rod_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_base_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_elbow_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_knee_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_distal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_metacarpal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_proximal_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_tip_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_short_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_cp_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_rod_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_cp_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_rod_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_pitch_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_roll_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_yaw_link.STL
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_gripper.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_hand.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_base.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_physics.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_robot.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_sensor.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_base.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_physics.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_robot.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_sensor.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_base.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_physics.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_robot.usd
+	modified:   source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_sensor.usd
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.claude/settings.local.json
+	.wandb_env
+	.wandb_key.b64
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/.gitattributes b/.gitattributes
+index 0b03973..6cb02b7 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -1,17 +1,3 @@
+ # copied and modified from https://github.com/NVIDIA/warp/blob/main/.gitattributes
+ * text=auto
+ *.sh text eol=LF
+-# copied from https://github.com/isaac-sim/IsaacLab/blob/main/.gitattributes
+-*.dae filter=lfs diff=lfs merge=lfs -text
+-*.mtl filter=lfs diff=lfs merge=lfs -text
+-*.obj filter=lfs diff=lfs merge=lfs -text
+-*.STL filter=lfs diff=lfs merge=lfs -text
+-*.stl filter=lfs diff=lfs merge=lfs -text
+-*.jpg filter=lfs diff=lfs merge=lfs -text
+-*.psd filter=lfs diff=lfs merge=lfs -text
+-*.mp4 filter=lfs diff=lfs merge=lfs -text
+-*.usda filter=lfs diff=lfs merge=lfs -text
+-*.hdr filter=lfs diff=lfs merge=lfs -text
+-*.pt filter=lfs diff=lfs merge=lfs -text
+-*.jit filter=lfs diff=lfs merge=lfs -text
+-doc/sim2sim.gif filter=lfs diff=lfs merge=lfs -text
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/base_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/base_link.STL
+index 20a7160..aeb8073 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/base_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/base_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/d435_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/d435_link.STL
+index fdcd753..7493258 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/d435_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/d435_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_0.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_0.STL
+index d618779..a9b3e0e 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_0.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_0.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_1.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_1.STL
+index eb54d9e..729115a 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_1.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_1.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_2.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_2.STL
+index 0392ad1..dbea81e 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_2.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_2.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_3.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_3.STL
+index eb54d9e..729115a 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_3.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_3.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_4.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_4.STL
+index 83422d5..751eaa4 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_4.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/gripper_link_4.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/hand_transition_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/hand_transition_link.STL
+index 5f3a313..b2060d9 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/hand_transition_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/hand_transition_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_cp_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_cp_link.STL
+index ebb7c3a..9f2c9c9 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_cp_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_cp_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_link.STL
+index 4fae08f..3d0023e 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_rod_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_rod_link.STL
+index 915e73b..f7ef98e 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_rod_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_A_achilles_rod_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_cp_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_cp_link.STL
+index 86e810f..6b7106b 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_cp_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_cp_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_link.STL
+index 3b27ffe..00c7f72 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_rod_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_rod_link.STL
+index fba767a..510378d 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_rod_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_B_achilles_rod_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_pitch_link.STL
+index 7591f32..4ec582f 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_roll_link.STL
+index 9474f77..c297c58 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ankle_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_base_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_base_link.STL
+index bf6062b..f8aee10 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_base_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_base_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_elbow_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_elbow_link.STL
+index 5be63f7..cc11188 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_elbow_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_elbow_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_pitch_link.STL
+index 2f1cafc..69fd4f7 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_roll_link.STL
+index 64c2454..30f8d4f 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_yaw_link.STL
+index 7dc9063..8d148df 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_hip_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_distal_link.STL
+index 56e21e1..89d3a1b 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_proximal_link.STL
+index 5da0045..2ef94bf 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_tip_link.STL
+index 74a8ec2..f8720d6 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_index_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_knee_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_knee_link.STL
+index e7ee14a..bc29211 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_knee_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_knee_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_distal_link.STL
+index 1a803bb..7028ace 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_proximal_link.STL
+index e855240..59b09b9 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_tip_link.STL
+index a090626..e624cb3 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_middle_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_distal_link.STL
+index 2b24fcb..bb88313 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_proximal_link.STL
+index ae8645a..33ff5b7 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_tip_link.STL
+index a8780b0..1620243 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_pinky_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_distal_link.STL
+index 1378338..1ffa718 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_proximal_link.STL
+index a031617..26189dc 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_tip_link.STL
+index aeb65e9..a15a561 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_ring_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_pitch_link.STL
+index 76f883e..bdbb0c3 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_roll_link.STL
+index 51a4039..11584ad 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_yaw_link.STL
+index 6340844..65f1850 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_shoulder_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_distal_link.STL
+index c805b8d..b676fc1 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_metacarpal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_metacarpal_link.STL
+index f400678..4797f18 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_metacarpal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_metacarpal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_proximal_link.STL
+index 7d3dae3..667b69c 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_tip_link.STL
+index a9d9818..a43f9e2 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_thumb_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_pitch_link.STL
+index 3c093cf..c9d587a 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_link.STL
+index ce25670..da91ab5 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_short_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_short_link.STL
+index 58ded1a..63fb4f3 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_short_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_roll_short_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_yaw_link.STL
+index 351ff74..06304c3 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/left_wrist_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_pitch_link.STL
+index 5129e80..11f74cb 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_yaw_link.STL
+index 465e075..38ff0bc 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/neck_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_cp_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_cp_link.STL
+index ae6f726..4464c36 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_cp_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_cp_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_link.STL
+index 3cdc91c..c959ec1 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_rod_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_rod_link.STL
+index ed5760e..8e47523 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_rod_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_A_achilles_rod_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_cp_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_cp_link.STL
+index 86e810f..6b7106b 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_cp_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_cp_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_link.STL
+index 373aea6..2cab8f4 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_rod_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_rod_link.STL
+index fba767a..510378d 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_rod_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_B_achilles_rod_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_pitch_link.STL
+index ccf2a53..35b7a20 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_roll_link.STL
+index d1fda8d..c6d0b19 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ankle_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_base_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_base_link.STL
+index 7d0a155..62aeba8 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_base_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_base_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_elbow_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_elbow_link.STL
+index 0b410b9..0539826 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_elbow_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_elbow_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_pitch_link.STL
+index 94ca3a0..457c2dc 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_roll_link.STL
+index fd376f0..19a5a9b 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_yaw_link.STL
+index d70c169..7980e35 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_hip_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_distal_link.STL
+index 1af488c..9e1f56f 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_proximal_link.STL
+index e311705..81d4896 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_tip_link.STL
+index 91dc6c2..b0008f8 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_index_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_knee_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_knee_link.STL
+index f12c804..dda402e 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_knee_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_knee_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_distal_link.STL
+index c75b47b..440e0d7 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_proximal_link.STL
+index d3bf00a..b13e2fc 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_tip_link.STL
+index 930fb07..80adde3 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_middle_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_distal_link.STL
+index abe6cbd..158a367 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_proximal_link.STL
+index 3642465..b9eea28 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_tip_link.STL
+index a7508a4..05f82c3 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_pinky_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_distal_link.STL
+index 2bf70ff..267045f 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_proximal_link.STL
+index b2d5c86..e849524 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_tip_link.STL
+index 6f0da49..40724b6 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_ring_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_pitch_link.STL
+index 1196508..2e5a5c6 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_roll_link.STL
+index 0ef59fb..3ee2a22 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_yaw_link.STL
+index ef126f1..99f527b 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_shoulder_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_distal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_distal_link.STL
+index d7de0f1..aaae3a4 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_distal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_distal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_metacarpal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_metacarpal_link.STL
+index 7d91ce5..b7c6379 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_metacarpal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_metacarpal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_proximal_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_proximal_link.STL
+index 21e0bf2..a8054f6 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_proximal_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_proximal_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_tip_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_tip_link.STL
+index ae1f9ac..6715b1e 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_tip_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_thumb_tip_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_pitch_link.STL
+index 0f2a19d..5f320b0 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_link.STL
+index fc0414a..356a4b9 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_short_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_short_link.STL
+index e538e4b..d28deb8 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_short_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_roll_short_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_yaw_link.STL
+index 9072fe8..59dfde0 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/right_wrist_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_cp_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_cp_link.STL
+index 9c29c49..ae09436 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_cp_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_cp_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_link.STL
+index e91cd86..26091d5 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_rod_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_rod_link.STL
+index 372c08a..d39902a 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_rod_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_A_rod_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_cp_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_cp_link.STL
+index a1b96d6..46e16b8 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_cp_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_cp_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_link.STL
+index 0c75147..ef63f94 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_rod_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_rod_link.STL
+index 372c08a..d39902a 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_rod_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_B_rod_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_pitch_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_pitch_link.STL
+index 4792f11..ff15ea1 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_pitch_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_pitch_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_roll_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_roll_link.STL
+index c3d8080..15d9b50 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_roll_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_roll_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_yaw_link.STL b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_yaw_link.STL
+index fece3a3..3b22a24 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_yaw_link.STL and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/meshes/HU_D04_01/waist_yaw_link.STL differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01.usd
+index 2391aca..9248012 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_gripper.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_gripper.usd
+index 5e4b5f3..ea42b5b 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_gripper.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_gripper.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_hand.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_hand.usd
+index a48fb41..d3a719c 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_hand.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/HU_D04_01_with_hand.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_base.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_base.usd
+index eeeec4f..2de6ff4 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_base.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_base.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_physics.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_physics.usd
+index 1f22719..7232348 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_physics.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_physics.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_robot.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_robot.usd
+index 8275f0d..b959729 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_robot.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_robot.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_sensor.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_sensor.usd
+index 5940885..499fb89 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_sensor.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_sensor.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_base.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_base.usd
+index 1a98af0..198de2b 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_base.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_base.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_physics.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_physics.usd
+index 7e9043d..9b2f720 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_physics.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_physics.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_robot.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_robot.usd
+index 834e951..246a3be 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_robot.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_robot.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_sensor.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_sensor.usd
+index 5940885..499fb89 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_sensor.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_gripper_sensor.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_base.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_base.usd
+index d37d83a..6f7757c 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_base.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_base.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_physics.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_physics.usd
+index 265cd38..3efc92f 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_physics.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_physics.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_robot.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_robot.usd
+index dbe44cc..4c3c0bf 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_robot.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_robot.usd differ
+diff --git a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_sensor.usd b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_sensor.usd
+index 5940885..499fb89 100644
+Binary files a/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_sensor.usd and b/source/limx_rl_lab/data/Robots/limx/HU_D04_description/usd/configuration/HU_D04_01_with_hand_sensor.usd differ

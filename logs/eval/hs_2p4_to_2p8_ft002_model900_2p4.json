@@ -1,0 +1,157 @@
+{
+  "checkpoint": "/root/code/beifen1001/logs/rsl_rl/limx_hu_d04_01_flat_velocity_hs/2026-10-04_20-53-08_hs-2p4-to-2p8-ft-002/model_900.pt",
+  "speeds_mps": [
+    2.4
+  ],
+  "gates": {
+    "completion_rate_min": 0.95,
+    "orientation_term_rate_max": 0.02,
+    "speed_rmse_max_mps": 0.25
+  },
+  "summary": [
+    {
+      "target_speed_mps": 2.4,
+      "num_seeds": 5,
+      "mean_vx_mps": 1.9309712081486734,
+      "rmse_vx_mps": 0.33747790200805616,
+      "completion_rate": 1.0,
+      "bad_orientation_rate": 0.0,
+      "base_contact_rate": 0.0,
+      "base_height_rate": 0.0,
+      "foot_slide_mean": 1.9427441630721092,
+      "joint_vel_saturation_rate": 0.20444,
+      "joint_torque_saturation_rate": 0.43632,
+      "action_clip_ratio": 0.1450748387096774,
+      "mean_joint_power_w": 22.334567870998384,
+      "cost_of_transport": 0.9350072707324317,
+      "gates": {
+        "completion_rate_min": 0.97,
+        "orientation_term_rate_max": 0.02,
+        "speed_rmse_max_mps": 0.25,
+        "completion_pass": true,
+        "orientation_pass": true,
+        "rmse_pass": false
+      },
+      "gates_pass": false,
+      "seeds": [
+        {
+          "target_speed_mps": 2.4,
+          "seed": 0,
+          "num_episodes": 5,
+          "mean_vx_mps": 1.930861688873917,
+          "rmse_vx_mps": 0.3373139410574,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 1.9426222781538964,
+          "joint_vel_saturation_rate": 0.2074,
+          "joint_torque_saturation_rate": 0.4398,
+          "action_clip_ratio": 0.14513548387096775,
+          "mean_joint_power_w": 22.332182976722716,
+          "cost_of_transport": 0.9349604424290463,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 1,
+          "num_episodes": 5,
+          "mean_vx_mps": 1.9313099312409758,
+          "rmse_vx_mps": 0.3373421409320828,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 1.9431454498022795,
+          "joint_vel_saturation_rate": 0.2022,
+          "joint_torque_saturation_rate": 0.4376,
+          "action_clip_ratio": 0.14513548387096775,
+          "mean_joint_power_w": 22.34049928855896,
+          "cost_of_transport": 0.9350915355875876,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 2,
+          "num_episodes": 5,
+          "mean_vx_mps": 1.9302846712511033,
+          "rmse_vx_mps": 0.33721045960687185,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 1.94199192430079,
+          "joint_vel_saturation_rate": 0.2032,
+          "joint_torque_saturation_rate": 0.434,
+          "action_clip_ratio": 0.14484516129032257,
+          "mean_joint_power_w": 22.33070347046852,
+          "cost_of_transport": 0.9351779693952937,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 3,
+          "num_episodes": 5,
+          "mean_vx_mps": 1.9313097461670636,
+          "rmse_vx_mps": 0.33826017669370045,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 1.943145877353847,
+          "joint_vel_saturation_rate": 0.2044,
+          "joint_torque_saturation_rate": 0.4342,
+          "action_clip_ratio": 0.14536129032258063,
+          "mean_joint_power_w": 22.333265538215638,
+          "cost_of_transport": 0.9347888468523379,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        },
+        {
+          "target_speed_mps": 2.4,
+          "seed": 4,
+          "num_episodes": 5,
+          "mean_vx_mps": 1.9310900032103062,
+          "rmse_vx_mps": 0.33726279175022594,
+          "completion_rate": 1.0,
+          "bad_orientation_rate": 0.0,
+          "base_contact_rate": 0.0,
+          "base_height_rate": 0.0,
+          "foot_slide_mean": 1.9428152857497334,
+          "joint_vel_saturation_rate": 0.205,
+          "joint_torque_saturation_rate": 0.436,
+          "action_clip_ratio": 0.14489677419354838,
+          "mean_joint_power_w": 22.336188081026076,
+          "cost_of_transport": 0.9350175593978932,
+          "extras": {
+            "early_term_rate": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "initial_max_speed_mps": 2.4,
+  "note": "Fixed-speed eval is authoritative for high-speed capability claims. Do not use mixed Train/mean_reward alone as acceptance evidence.",
+  "wandb_metrics": {
+    "eval/2.4/mean_vx": 1.9309712081486734,
+    "eval/2.4/rmse_vx": 0.33747790200805616,
+    "eval/2.4/episode_completion": 1.0,
+    "eval/2.4/bad_orientation_rate": 0.0,
+    "eval/2.4/base_contact_rate": 0.0,
+    "eval/2.4/base_height_rate": 0.0,
+    "eval/2.4/foot_slide": 1.9427441630721092,
+    "eval/2.4/joint_vel_saturation_rate": 0.20444,
+    "eval/2.4/joint_torque_saturation_rate": 0.43632,
+    "eval/2.4/action_clip_ratio": 0.1450748387096774,
+    "eval/2.4/mean_joint_power_w": 22.334567870998384,
+    "eval/2.4/cost_of_transport": 0.9350072707324317,
+    "eval/2.4/gates_pass": 0.0
+  }
+}

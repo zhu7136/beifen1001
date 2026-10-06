@@ -81,3 +81,55 @@ def ang_vel_cmd_levels(
             ).tolist()
 
     return torch.tensor(ranges.ang_vel_z[1], device=env.device)
+
+
+def gated_speed_levels(
+    env: ManagerBasedRLEnv,
+    env_ids: Sequence[int],
+    command_name: str = "base_velocity",
+) -> dict:
+    """Rolling-frontier high-speed curriculum (numeric state for logging).
+
+    Promotion/hold is applied every step in HighSpeedUniformVelocityCommand.
+    This term only surfaces numeric curriculum state on curriculum compute (reset).
+    """
+    from limx_rl_lab.tasks.locomotion.mdp.commands.velocity_command import get_or_init_hs_state
+
+    command_term = env.command_manager.get_term(command_name)
+    state = get_or_init_hs_state(command_term)
+
+    return {
+        "current_max_speed_mps": float(state.current_max_speed_mps),
+        "target_speed_mps": float(state.target_speed_mps),
+        "level": float(state.level),
+        "frozen": float(state.frozen),
+        "frontier_speed_rmse_mps": float(state.last_rmse_mps),
+        "frontier_completion_rate": float(state.last_completion_rate),
+        "frontier_orientation_rate": float(state.last_orientation_term_rate),
+        "frontier_saturation_rate": float(state.last_saturation_rate),
+        "consecutive_pass_iterations": float(state.consecutive_pass_iterations),
+        "iterations_at_current_speed": float(state.iterations_at_current_speed),
+        "gate_reason_code": float(_gate_reason_code(state.last_gate_reason)),
+        "mixed_rmse_mps": float(state.last_mixed_rmse_mps),
+        "commanded_vx_mps": float(state.last_commanded_vx_mps),
+        "measured_vx_mps": float(state.last_measured_vx_mps),
+        "joint_vel_saturation_rate": float(state.last_joint_vel_sat_rate),
+        "joint_torque_saturation_rate": float(state.last_joint_torque_sat_rate),
+        "action_clip_ratio": float(state.last_action_clip_ratio),
+    }
+
+
+def _gate_reason_code(reason: str) -> int:
+    code = 0
+    if not reason:
+        return 0
+    mapping = {
+        "completion": 1,
+        "orientation": 2,
+        "rmse": 4,
+        "saturation": 8,
+        "window_incomplete": 16,
+    }
+    for part in str(reason).split(","):
+        code |= mapping.get(part.strip(), 16)
+    return code
