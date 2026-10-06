@@ -85,6 +85,10 @@ def resolve_path(base_dir: Path, path_str: str) -> Path:
     path = Path(path_str)
     if path.is_absolute():
         return path
+    # Prefer CWD-relative paths (repo-root CLI usage), fall back to script_dir-relative.
+    cwd_candidate = (Path.cwd() / path).resolve()
+    if cwd_candidate.exists():
+        return cwd_candidate
     return (base_dir / path).resolve()
 
 
@@ -94,6 +98,11 @@ def resolve_policy_path(config_path: Path, policy_root: str | None, path_str: st
         return path
 
     project_root = config_path.parents[3]
+
+    # Repo-root-relative or CWD-relative --policy paths take precedence.
+    for candidate in ((Path.cwd() / path).resolve(), (project_root / path).resolve()):
+        if candidate.exists():
+            return candidate
 
     if policy_root:
         policy_root_path = Path(policy_root)
