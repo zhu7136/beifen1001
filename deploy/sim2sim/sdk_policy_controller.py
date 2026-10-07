@@ -1,6 +1,7 @@
 import argparse
 import copy
 import ctypes
+import csv
 import glob
 import os
 import subprocess
@@ -426,6 +427,14 @@ class LimxSDKPolicyController:
         return np.clip(obs, -self.clip_observations, self.clip_observations)
 
     def compute_action(self, obs):
+        # 测量真实的策略推理间隔，而不是名义上的 20 ms
+        now = time.perf_counter()
+        previous = getattr(self, "_diag_previous_policy_time", None)
+        self._diag_policy_dt = (
+            float("nan") if previous is None else now - previous
+        )
+        self._diag_previous_policy_time = now
+
         with torch.inference_mode():
             obs_tensor = torch.from_numpy(obs).unsqueeze(0)
             action = self.policy(obs_tensor)
@@ -451,6 +460,51 @@ class LimxSDKPolicyController:
         ) / safe_kp
         limited_action = np.clip(self.last_action, action_min / safe_scale, action_max / safe_scale)
         desired_q_policy = limited_action * self.action_scale + self.default_angles
+
+        # 只记录数据，不修改 action、目标或力矩。
+        if not hasattr(self, "_diag_csv"):
+            self._diag_file = open(
+                "controller_diag.csv", "w", newline="", buffering=1
+            )
+            self._diag_csv = csv.writer(self._diag_file)
+            self._diag_csv.writerow([
+                "wall_time_s", "cmd_vx", "policy_dt_s",
+                "joint", "q", "dq", "action",
+                "q_raw", "q_limited", "target_clip_rad",
+                "tau_requested", "tau_after_target_limit", "tau_limit",
+            ])
+            self._diag_next_time = 0.0
+
+        now = time.perf_counter()
+        if now >= self._diag_next_time:
+            self._diag_next_time = now + 0.02  # 约 50 Hz
+
+            raw_q = self.default_angles + self.last_action * self.action_scale
+            tau_raw = self.kps * (raw_q - joint_pos) - self.kds * joint_vel
+            tau_limited = (
+                self.kps * (desired_q_policy - joint_pos)
+                - self.kds * joint_vel
+            )
+
+            watched = [
+                "left_ankle_pitch_joint", "right_ankle_pitch_joint",
+                "left_ankle_roll_joint", "right_ankle_roll_joint",
+                "left_hip_pitch_joint", "right_hip_pitch_joint",
+            ]
+            wall_time = time.time()
+            for name in watched:
+                i = self.policy_joint_index[name]
+                self._diag_csv.writerow([
+                    wall_time, float(self.cmd[0]),
+                    getattr(self, "_diag_policy_dt", float("nan")),
+                    name,
+                    float(joint_pos[i]), float(joint_vel[i]),
+                    float(self.last_action[i]),
+                    float(raw_q[i]), float(desired_q_policy[i]),
+                    float(abs(raw_q[i] - desired_q_policy[i])),
+                    float(tau_raw[i]), float(tau_limited[i]),
+                    float(0.95 * self.user_torque_limit[i]),
+                ])
 
         # Diagnostic only: does not change commands or limits.
         if not hasattr(self, "_limit_diag_count"):

@@ -2,6 +2,7 @@
 #
 # © [2025] LimX Dynamics Technology Co., Ltd. All rights reserved.
 
+import csv
 import os
 import sys
 import time
@@ -15,6 +16,7 @@ import numpy as np
 import mujoco
 import mujoco.viewer as viewer
 from functools import partial
+from scipy.spatial.transform import Rotation
 import limxsdk
 import limxsdk.robot.Rate as Rate
 import limxsdk.robot.Robot as Robot
@@ -73,6 +75,19 @@ class SimulatorMujoco:
         self.robotCmdCallbackPartial = partial(self.robotCmdCallback)
         self.robot.subscribeRobotCmdForSim(self.robotCmdCallbackPartial)
 
+        # 诊断 CSV 日志初始化
+        self._diag_file = open(
+            "mujoco_diag.csv", "w", newline="", buffering=1
+        )
+        self._diag_csv = csv.writer(self._diag_file)
+        self._diag_csv.writerow([
+            "wall_time_s", "sim_time_s",
+            "base_z", "vx_world", "vx_body", "roll_deg", "pitch_deg",
+            "actuator", "ctrl_requested", "actuator_force",
+            "ctrl_min", "ctrl_max", "ctrl_limited",
+        ])
+        self._diag_next_time = 0.0
+
     # Callback function for receiving robot command data
     def robotCmdCallback(self, robot_cmd: datatypes.RobotCmd):
         self.robot_cmd = robot_cmd
@@ -87,6 +102,46 @@ class SimulatorMujoco:
         while self.viewer.is_running():    
             # Step the MuJoCo physics simulation
             mujoco.mj_step(self.mujoco_model, self.mujoco_data)
+
+            # 诊断日志：记录真实速度、姿态和电机饱和
+            m = self.mujoco_model
+            d = self.mujoco_data
+            if d.time >= self._diag_next_time:
+                self._diag_next_time = float(d.time) + 0.02
+
+                if self.floating_base:
+                    # 浮动基座模型：xyz + quaternion(wxyz)
+                    quat = np.asarray(d.qpos[3:7])
+                    rotation = Rotation.from_quat(quat[[1, 2, 3, 0]])
+                    roll, pitch, yaw = rotation.as_euler("xyz", degrees=True)
+
+                    world_vel = np.asarray(d.qvel[:3])
+                    body_vel = rotation.inv().apply(world_vel)
+                else:
+                    # 固定基座模型：无浮动基座速度
+                    roll, pitch, yaw = 0.0, 0.0, 0.0
+                    world_vel = np.array([0.0, 0.0, 0.0])
+                    body_vel = np.array([0.0, 0.0, 0.0])
+
+                wall_time = time.time()
+                base_z = float(d.qpos[2]) if self.floating_base else 0.0
+
+                for i in range(m.nu):
+                    name = mujoco.mj_id2name(
+                        m, mujoco.mjtObj.mjOBJ_ACTUATOR, i
+                    )
+                    lo, hi = m.actuator_ctrlrange[i]
+                    self._diag_csv.writerow([
+                        wall_time, float(d.time),
+                        base_z,
+                        float(world_vel[0]), float(body_vel[0]),
+                        float(roll), float(pitch),
+                        name,
+                        float(d.ctrl[i]), float(d.actuator_force[i]),
+                        float(lo), float(hi),
+                        int(m.actuator_ctrllimited[i]),
+                    ])
+
             if not self.floating_base:
                 # Extract IMU data (orientation, gyro, and acceleration) from simulation
                 self.imu_data.quat[0] = self.mujoco_data.sensordata[0]
