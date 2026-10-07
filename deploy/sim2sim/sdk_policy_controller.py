@@ -175,10 +175,24 @@ def load_training_deploy_overrides(policy_path: Path, num_actions: int, update_r
 
     gait_phase_cfg = deploy_cfg.get("observations", {}).get("gait_phase")
     if gait_phase_cfg is not None:
-        gait_phase_params = gait_phase_cfg.get("params", {})
-        overrides["gait_period"] = float(gait_phase_params.get("period", 0.0))
-        if "command_threshold" in gait_phase_params:
-            overrides["command_threshold"] = float(gait_phase_params["command_threshold"])
+        p = gait_phase_cfg.get("params", {})
+        base_period = float(p.get("period", 0.72))
+
+        start = p.get("period_start")
+        end = p.get("period_end")
+
+        overrides["gait_period"] = base_period
+        overrides["gait_period_start"] = (
+            base_period if start is None else float(start)
+        )
+        overrides["gait_period_end"] = (
+            base_period if end is None else float(end)
+        )
+        overrides["gait_speed_start"] = float(p.get("speed_start", 2.0))
+        overrides["gait_speed_end"] = float(p.get("speed_end", 2.8))
+
+        if "command_threshold" in p:
+            overrides["command_threshold"] = float(p["command_threshold"])
 
     overrides["deploy_path"] = deploy_path
     return overrides
@@ -273,6 +287,47 @@ class LimxSDKPolicyController:
         self.control_decimation = int(deploy_overrides.get("control_decimation", self.config["control_decimation"]))
         self.update_rate = int(self.config["update_rate"])
         self.gait_period = float(deploy_overrides.get("gait_period", self.config["gait_period"]))
+        print(f"[CHECK] deployed gait_period={self.gait_period:.6f} s")
+
+        self.gait_period_start = float(
+            deploy_overrides.get(
+                "gait_period_start",
+                self.config.get("gait_period_start", self.gait_period),
+            )
+        )
+        self.gait_period_end = float(
+            deploy_overrides.get(
+                "gait_period_end",
+                self.config.get("gait_period_end", self.gait_period),
+            )
+        )
+        self.gait_speed_start = float(
+            deploy_overrides.get(
+                "gait_speed_start", self.config.get("gait_speed_start", 2.0)
+            )
+        )
+        self.gait_speed_end = float(
+            deploy_overrides.get(
+                "gait_speed_end", self.config.get("gait_speed_end", 2.8)
+            )
+        )
+
+        if min(self.gait_period_start, self.gait_period_end) <= 0.0:
+            raise ValueError("Gait periods must be positive.")
+        if self.gait_speed_end <= self.gait_speed_start:
+            raise ValueError("gait_speed_end must exceed gait_speed_start.")
+
+        self._gait_phase_fraction = 0.0
+        self._gait_last_time = None
+
+        print(
+            "[CHECK] dynamic gait: "
+            f"period={self.gait_period_start:.3f}"
+            f"->{self.gait_period_end:.3f} s, "
+            f"speed={self.gait_speed_start:.3f}"
+            f"->{self.gait_speed_end:.3f} m/s"
+        )
+
         self.command_threshold = float(deploy_overrides.get("command_threshold", self.config.get("command_threshold", 0.1)))
         self.command_warmup_s = float(self.config.get("command_warmup_s", 0.0))
         self.parallel_solve_required = bool(self.config.get("parallel_solve_required", True))
@@ -317,6 +372,42 @@ class LimxSDKPolicyController:
         self.robot_order_index = [motor_names.index(name) for name in self.policy_joints]
         print("[sdk-sim2sim] connected to simulator in PR space.")
 
+    def compute_gait_phase(self, current_cmd, sim_time):
+        speed = abs(float(current_cmd[0]))
+        alpha = float(np.clip(
+            (speed - self.gait_speed_start)
+            / (self.gait_speed_end - self.gait_speed_start),
+            0.0,
+            1.0,
+        ))
+        period = (
+            self.gait_period_start
+            + alpha * (self.gait_period_end - self.gait_period_start)
+        )
+
+        now = float(sim_time)
+
+        if self._gait_last_time is None or now < self._gait_last_time:
+            # Initial call or controller clock reset.
+            self._gait_phase_fraction = 0.0
+        else:
+            elapsed = now - self._gait_last_time
+            self._gait_phase_fraction = (
+                self._gait_phase_fraction + elapsed / period
+            ) % 1.0
+
+        self._gait_last_time = now
+
+        # Match training: hide phase while standing,
+        # but keep the internal accumulator advancing.
+        if np.linalg.norm(current_cmd) < self.command_threshold:
+            return np.array([0.0, 1.0], dtype=np.float32)
+
+        angle = 2.0 * np.pi * self._gait_phase_fraction
+        return np.array(
+            [np.sin(angle), np.cos(angle)], dtype=np.float32
+        )
+
     def build_observation(self, robot_state, imu_data, sim_time):
         joint_pos = np.asarray(robot_state.q, dtype=np.float32)[self.robot_order_index]
         joint_vel = np.asarray(robot_state.dq, dtype=np.float32)[self.robot_order_index]
@@ -329,8 +420,8 @@ class LimxSDKPolicyController:
         obs[9 : 9 + self.num_actions] = (joint_pos - self.default_angles) * self.dof_pos_scale
         obs[9 + self.num_actions : 9 + 2 * self.num_actions] = joint_vel * self.dof_vel_scale
         obs[9 + 2 * self.num_actions : 9 + 3 * self.num_actions] = self.last_action
-        obs[9 + 3 * self.num_actions : 9 + 3 * self.num_actions + 2] = get_gait_phase(
-            sim_time, self.gait_period, current_cmd, self.command_threshold
+        obs[9 + 3 * self.num_actions : 9 + 3 * self.num_actions + 2] = (
+            self.compute_gait_phase(current_cmd, sim_time)
         )
         return np.clip(obs, -self.clip_observations, self.clip_observations)
 
@@ -360,6 +451,52 @@ class LimxSDKPolicyController:
         ) / safe_kp
         limited_action = np.clip(self.last_action, action_min / safe_scale, action_max / safe_scale)
         desired_q_policy = limited_action * self.action_scale + self.default_angles
+
+        # Diagnostic only: does not change commands or limits.
+        if not hasattr(self, "_limit_diag_count"):
+            self._limit_diag_count = 0
+            self._limit_diag_hits = np.zeros(
+                self.num_actions, dtype=np.float64
+            )
+            self._limit_diag_peak = np.zeros(
+                self.num_actions, dtype=np.float64
+            )
+            self._limit_diag_last_print = time.perf_counter()
+
+        changed = np.abs(self.last_action - limited_action) > 1e-5
+        target_change_rad = np.abs(
+            (self.last_action - limited_action) * self.action_scale
+        )
+
+        self._limit_diag_count += 1
+        self._limit_diag_hits += changed
+        self._limit_diag_peak = np.maximum(
+            self._limit_diag_peak, target_change_rad
+        )
+
+        now = time.perf_counter()
+        if now - self._limit_diag_last_print >= 1.0:
+            rates = self._limit_diag_hits / self._limit_diag_count
+            top = np.argsort(rates)[::-1][:4]
+
+            details = ", ".join(
+                f"{self.policy_joints[i]}:"
+                f"limited={rates[i]:.1%},"
+                f"max_dq={self._limit_diag_peak[i]:.3f}rad"
+                for i in top
+                if rates[i] > 0.0
+            )
+
+            print(
+                "[LIMIT] "
+                f"cmd_vx={self.cmd[0]:.2f} "
+                + (details or "no target limiting")
+            )
+
+            self._limit_diag_count = 0
+            self._limit_diag_hits.fill(0.0)
+            self._limit_diag_peak.fill(0.0)
+            self._limit_diag_last_print = now
 
         cmd_msg = datatypes.RobotCmd()
         cmd_msg.stamp = time.time_ns()
