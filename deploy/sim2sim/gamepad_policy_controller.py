@@ -1,6 +1,8 @@
 import argparse
 import copy
 import os
+import socket
+import struct
 import sys
 import time
 from dataclasses import dataclass
@@ -686,6 +688,16 @@ class GamepadPolicyController(LimxSDKPolicyController):
         self.mimic_playback_time_s = 0.0
         self.active_mode = "walk"
 
+        # 接收 MuJoCo 仿真时钟
+        self._clock_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._clock_socket.bind(("127.0.0.1", 15171))
+        self._clock_socket.setblocking(False)
+
+        self._last_sim_time = None
+        self._walk_clock_origin = None
+        self._last_policy_sim_time = None
+        self._policy_step_dt = self.control_decimation / float(self.update_rate)
+
         self.target_cmd = self.cmd.copy()
         self.teleop = GamepadTeleop(args)
         self.command_rise_rate = np.array(
@@ -787,14 +799,48 @@ class GamepadPolicyController(LimxSDKPolicyController):
                 self._align_mimic_reference_heading(robot_state, imu_data)
         print(f"[gamepad-sim2sim] active mode -> {self.active_mode}")
 
-    def _run_walk_step(self, robot_state, imu_data):
-        sim_time = self.walk_loop_count / float(self.update_rate)
+    def _read_sim_time(self):
+        latest = None
+        while True:
+            try:
+                packet, _ = self._clock_socket.recvfrom(64)
+            except BlockingIOError:
+                break
+
+            if len(packet) == 8:
+                value = struct.unpack("!d", packet)[0]
+                if np.isfinite(value):
+                    latest = value
+
+        return latest
+
+    def _run_walk_step(self, robot_state, imu_data, sim_time):
         self.last_action = self.walk_last_action
 
-        if self.walk_loop_count % self.control_decimation == 0:
-            obs = super().build_observation(robot_state, imu_data, sim_time)
+        if self._walk_clock_origin is None:
+            self._walk_clock_origin = sim_time
+
+        due = (
+            self._last_policy_sim_time is None
+            or sim_time - self._last_policy_sim_time
+            >= self._policy_step_dt - 1e-9
+        )
+
+        if due:
+            self._diag_policy_sim_dt = (
+                float("nan")
+                if self._last_policy_sim_time is None
+                else sim_time - self._last_policy_sim_time
+            )
+
+            # 暖启动和动态相位都使用实际经过的仿真时间。
+            elapsed_sim = sim_time - self._walk_clock_origin
+            obs = super().build_observation(
+                robot_state, imu_data, elapsed_sim
+            )
             self.last_action = super().compute_action(obs)
             self.walk_last_action = self.last_action.copy()
+            self._last_policy_sim_time = sim_time
 
         super().publish_command(robot_state)
         self.walk_loop_count += 1
@@ -925,48 +971,63 @@ class GamepadPolicyController(LimxSDKPolicyController):
     def run(self):
         self.wait_for_first_state()
         rate = Rate(self.update_rate)
-        t0 = time.perf_counter()
-        dt = 1.0 / float(self.update_rate)
+        last_print = time.perf_counter()
+        print("[SYNC] WALK-only test; waiting for MuJoCo clock on port 15171")
 
         while True:
+            # 每次循环仍处理手柄事件。
             teleop_command = self.teleop.read_command()
-            robot_state = copy.deepcopy(self.io.robot_state)
-            imu_data = copy.deepcopy(self.io.imu_data)
-
             requested_mode = self.teleop.consume_mode_request()
-            if requested_mode is not None:
-                self._switch_mode(requested_mode, robot_state, imu_data)
+            if requested_mode not in (None, "walk"):
+                print("[SYNC] MIMIC disabled during WALK timing test")
+
+            sim_time = self._read_sim_time()
+            if sim_time is None:
+                # 没有新仿真时间，不推进指令、相位或策略。
+                rate.sleep()
+                continue
+
+            if self._last_sim_time is None:
+                dt_sim = 0.0
+            else:
+                dt_sim = sim_time - self._last_sim_time
+                if dt_sim < -1e-9:
+                    raise RuntimeError(
+                        "MuJoCo time reset: restart the controller too."
+                    )
+                if dt_sim <= 0.0:
+                    rate.sleep()
+                    continue
+
+            self._last_sim_time = sim_time
+            self._diag_sim_time = sim_time
 
             self.target_cmd = teleop_command
             self.cmd = slew_limit_vector(
-                self.cmd, self.target_cmd, self.command_rise_rate, self.command_fall_rate, dt
+                self.cmd,
+                self.target_cmd,
+                self.command_rise_rate,
+                self.command_fall_rate,
+                dt_sim,
             )
 
-            if self.active_mode == "walk":
-                self._run_walk_step(robot_state, imu_data)
-            else:
-                self._run_mimic_step(robot_state, imu_data, dt)
-
+            robot_state = copy.deepcopy(self.io.robot_state)
+            imu_data = copy.deepcopy(self.io.imu_data)
+            self._run_walk_step(robot_state, imu_data, sim_time)
             self.loop_count += 1
-            if self.loop_count % self.update_rate == 0:
-                fps = self.loop_count / max(1e-6, (time.perf_counter() - t0))
-                state = "ACTIVE" if self.teleop.enabled else "PAUSED"
-                controller_name = self.teleop.controller.name if self.teleop.controller is not None else "none"
-                if self.active_mode == "walk":
-                    mode_status = (
-                        f"cmd=({self.cmd[0]:+.2f}, {self.cmd[1]:+.2f}, {self.cmd[2]:+.2f}) "
-                        f"target=({self.target_cmd[0]:+.2f}, {self.target_cmd[1]:+.2f}, {self.target_cmd[2]:+.2f})"
-                    )
-                else:
-                    mode_status = (
-                        f"frame={self.mimic.current_frame_index:04d}/{self.mimic.motion.total_frames:04d} "
-                        f"motion={self.mimic.motion.path.name}"
-                    )
-                print(
-                    f"[gamepad-sim2sim] fps={fps:.1f} state={state} mode={self.active_mode.upper()} "
-                    f"controller={controller_name} {mode_status}",
-                    end="\r",
+
+            now = time.perf_counter()
+            if now - last_print >= 1.0:
+                policy_dt = getattr(
+                    self, "_diag_policy_sim_dt", float("nan")
                 )
+                print(
+                    f"[SYNC] sim_t={sim_time:.3f}s "
+                    f"policy_sim_dt={policy_dt * 1000:.2f}ms "
+                    f"cmd_vx={self.cmd[0]:.3f}"
+                )
+                last_print = now
+
             rate.sleep()
 
     def close(self):

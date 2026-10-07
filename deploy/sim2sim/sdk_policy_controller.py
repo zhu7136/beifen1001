@@ -468,7 +468,9 @@ class LimxSDKPolicyController:
             )
             self._diag_csv = csv.writer(self._diag_file)
             self._diag_csv.writerow([
-                "wall_time_s", "cmd_vx", "policy_dt_s",
+                "wall_time_s", "monotonic_time_s",
+                "sim_time_s", "policy_sim_dt_s",
+                "cmd_vx", "policy_dt_s",
                 "joint", "q", "dq", "action",
                 "q_raw", "q_limited", "target_clip_rad",
                 "tau_requested", "tau_after_target_limit", "tau_limit",
@@ -495,7 +497,10 @@ class LimxSDKPolicyController:
             for name in watched:
                 i = self.policy_joint_index[name]
                 self._diag_csv.writerow([
-                    wall_time, float(self.cmd[0]),
+                    wall_time, time.perf_counter(),
+                    getattr(self, "_diag_sim_time", float("nan")),
+                    getattr(self, "_diag_policy_sim_dt", float("nan")),
+                    float(self.cmd[0]),
                     getattr(self, "_diag_policy_dt", float("nan")),
                     name,
                     float(joint_pos[i]), float(joint_vel[i]),

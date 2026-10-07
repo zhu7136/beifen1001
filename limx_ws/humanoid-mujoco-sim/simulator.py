@@ -4,6 +4,8 @@
 
 import csv
 import os
+import socket
+import struct
 import sys
 import time
 import subprocess
@@ -81,12 +83,27 @@ class SimulatorMujoco:
         )
         self._diag_csv = csv.writer(self._diag_file)
         self._diag_csv.writerow([
-            "wall_time_s", "sim_time_s",
+            "wall_time_s", "monotonic_time_s", "sim_time_s",
             "base_z", "vx_world", "vx_body", "roll_deg", "pitch_deg",
             "actuator", "ctrl_requested", "actuator_force",
             "ctrl_min", "ctrl_max", "ctrl_limited",
         ])
         self._diag_next_time = 0.0
+
+        # 只向本机控制器发送 MuJoCo 时间。
+        self._clock_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._clock_socket.setblocking(False)
+        self._clock_address = ("127.0.0.1", 15171)
+
+        # 从模型结构识别自由基座，不能使用 self.floating_base 判断。
+        m = self.mujoco_model
+        free_ids = np.flatnonzero(m.jnt_type == mujoco.mjtJoint.mjJNT_FREE)
+        if len(free_ids) != 1:
+            raise ValueError("当前诊断要求模型有且只有一个自由基座")
+
+        jid = int(free_ids[0])
+        self._diag_base_qadr = int(m.jnt_qposadr[jid])
+        self._diag_base_vadr = int(m.jnt_dofadr[jid])
 
     # Callback function for receiving robot command data
     def robotCmdCallback(self, robot_cmd: datatypes.RobotCmd):
@@ -109,30 +126,25 @@ class SimulatorMujoco:
             if d.time >= self._diag_next_time:
                 self._diag_next_time = float(d.time) + 0.02
 
-                if self.floating_base:
-                    # 浮动基座模型：xyz + quaternion(wxyz)
-                    quat = np.asarray(d.qpos[3:7])
-                    rotation = Rotation.from_quat(quat[[1, 2, 3, 0]])
-                    roll, pitch, yaw = rotation.as_euler("xyz", degrees=True)
+                qa = self._diag_base_qadr
+                va = self._diag_base_vadr
 
-                    world_vel = np.asarray(d.qvel[:3])
-                    body_vel = rotation.inv().apply(world_vel)
-                else:
-                    # 固定基座模型：无浮动基座速度
-                    roll, pitch, yaw = 0.0, 0.0, 0.0
-                    world_vel = np.array([0.0, 0.0, 0.0])
-                    body_vel = np.array([0.0, 0.0, 0.0])
+                quat = np.asarray(d.qpos[qa + 3:qa + 7])
+                rotation = Rotation.from_quat(quat[[1, 2, 3, 0]])
+                roll, pitch, yaw = rotation.as_euler("xyz", degrees=True)
+
+                world_vel = np.asarray(d.qvel[va:va + 3])
+                body_vel = rotation.inv().apply(world_vel)
+                base_z = float(d.qpos[qa + 2])
 
                 wall_time = time.time()
-                base_z = float(d.qpos[2]) if self.floating_base else 0.0
-
                 for i in range(m.nu):
                     name = mujoco.mj_id2name(
                         m, mujoco.mjtObj.mjOBJ_ACTUATOR, i
                     )
                     lo, hi = m.actuator_ctrlrange[i]
                     self._diag_csv.writerow([
-                        wall_time, float(d.time),
+                        wall_time, time.perf_counter(), float(d.time),
                         base_z,
                         float(world_vel[0]), float(body_vel[0]),
                         float(roll), float(pitch),
@@ -194,6 +206,15 @@ class SimulatorMujoco:
             # Set the timestamp for the current robot state and publish it
             self.robot_state.stamp = time.time_ns()
             self.robot.publishRobotStateForSim(self.robot_state)
+
+            # 发送仿真时间到控制器
+            try:
+                self._clock_socket.sendto(
+                    struct.pack("!d", float(self.mujoco_data.time)),
+                    self._clock_address,
+                )
+            except BlockingIOError:
+                pass  # 本机 UDP 满时跳过这一包，下一步继续发送。
 
             # Sync the viewer every 20 frames for smoother visualization
             if frame_count % 20 == 0:
