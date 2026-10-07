@@ -991,10 +991,14 @@ class GamepadPolicyController(LimxSDKPolicyController):
                 dt_sim = 0.0
             else:
                 dt_sim = sim_time - self._last_sim_time
-                if dt_sim < -1e-9:
-                    raise RuntimeError(
-                        "MuJoCo time reset: restart the controller too."
+                if dt_sim < -1e-3:
+                    # MuJoCo 时间重置（例如仿真器重启）
+                    print(
+                        f"[SYNC] MuJoCo time reset detected: {self._last_sim_time:.3f}s -> {sim_time:.3f}s. "
+                        "Re-syncing walk clock."
                     )
+                    self._walk_clock_origin = None
+                    self._last_policy_sim_time = None
                 if dt_sim <= 0.0:
                     rate.sleep()
                     continue
