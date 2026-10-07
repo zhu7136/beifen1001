@@ -89,6 +89,7 @@ class SimulatorMujoco:
             "ctrl_min", "ctrl_max", "ctrl_limited",
         ])
         self._diag_next_time = 0.0
+        self._diag_last_sim_time = None
 
         # 只向本机控制器发送 MuJoCo 时间。
         self._clock_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -123,6 +124,16 @@ class SimulatorMujoco:
             # 诊断日志：记录真实速度、姿态和电机饱和
             m = self.mujoco_model
             d = self.mujoco_data
+
+            # 检测仿真时间重置
+            if (
+                self._diag_last_sim_time is not None
+                and float(d.time) < self._diag_last_sim_time - 1e-9
+            ):
+                self._diag_next_time = 0.0
+
+            self._diag_last_sim_time = float(d.time)
+
             if d.time >= self._diag_next_time:
                 self._diag_next_time = float(d.time) + 0.02
 

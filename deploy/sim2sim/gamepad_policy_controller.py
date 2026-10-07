@@ -991,18 +991,42 @@ class GamepadPolicyController(LimxSDKPolicyController):
                 dt_sim = 0.0
             else:
                 dt_sim = sim_time - self._last_sim_time
-                if dt_sim < -1e-3:
-                    # MuJoCo 时间重置（例如仿真器重启）
+                if dt_sim < -1e-9:
                     print(
-                        f"[SYNC] MuJoCo time reset detected: {self._last_sim_time:.3f}s -> {sim_time:.3f}s. "
-                        "Re-syncing walk clock."
+                        f"[SYNC] Reset detected: "
+                        f"{self._last_sim_time:.3f}s -> {sim_time:.3f}s; "
+                        "clearing WALK state"
                     )
+                    # 清除旧速度指令，Reset 后需要重新按 START。
+                    self.teleop.enabled = False
+                    self.cmd.fill(0.0)
+                    self.target_cmd.fill(0.0)
+                    teleop_command = np.zeros_like(self.cmd)
+
+                    # 清除策略上一动作及步态相位状态。
+                    self.last_action.fill(0.0)
+                    self.walk_last_action.fill(0.0)
+                    self._gait_phase_fraction = 0.0
+                    self._gait_last_time = None
+
+                    # 下一次 WALK 调用立即重新计算策略。
                     self._walk_clock_origin = None
                     self._last_policy_sim_time = None
-                if dt_sim <= 0.0:
+                    self.walk_loop_count = 0
+
+                    # 清除诊断中的旧策略间隔。
+                    self._diag_previous_policy_time = None
+                    self._diag_policy_dt = float("nan")
+                    self._diag_policy_sim_dt = float("nan")
+
+                    # 本轮不推进速度指令，但继续执行零指令 WALK。
+                    dt_sim = 0.0
+
+                elif dt_sim <= 0.0:
                     rate.sleep()
                     continue
 
+            # 必须更新，否则 Reset 后一直与旧时间比较。
             self._last_sim_time = sim_time
             self._diag_sim_time = sim_time
 
