@@ -1,0 +1,377 @@
+# Copyright information
+#
+# © [2025] LimX Dynamics Technology Co., Ltd. All rights reserved.
+
+import csv
+import os
+import socket
+import struct
+import sys
+import time
+import subprocess
+import atexit
+
+# Force OpenGL backend for headless rendering
+os.environ['MUJOCO_GL'] = os.environ.get('MUJOCO_GL', 'egl')
+
+import numpy as np
+import mujoco
+import mujoco.viewer as viewer
+from functools import partial
+from scipy.spatial.transform import Rotation
+import limxsdk
+import limxsdk.robot.Rate as Rate
+import limxsdk.robot.Robot as Robot
+import limxsdk.robot.RobotType as RobotType
+import limxsdk.datatypes as datatypes
+
+class SimulatorMujoco:
+    def __init__(self, asset_path, robot, floating_base): 
+        self.robot = robot
+        self.floating_base = floating_base
+        
+        # Load the MuJoCo model and data from the specified XML asset path
+        self.mujoco_model = mujoco.MjModel.from_xml_path(asset_path)
+        self.mujoco_data = mujoco.MjData(self.mujoco_model)
+
+        # Get the number of actuators
+        self.actuator_count = self.mujoco_model.nu
+
+        # Get the number of joints
+        self.joint_num = self.mujoco_model.njnt
+
+        # Get the joint names
+        self.joint_sensor_names = []
+        for i in range(self.joint_num):
+            joint_name = mujoco.mj_id2name(self.mujoco_model, mujoco.mjtObj.mjOBJ_JOINT, i)
+            self.joint_sensor_names.append(joint_name)
+        
+        # Launch the MuJoCo viewer in passive mode with custom settings
+        self.viewer = viewer.launch_passive(self.mujoco_model, self.mujoco_data, key_callback=self.key_callback, show_left_ui=True, show_right_ui=True)
+        self.viewer.cam.distance = 10  # Set camera distance
+        self.viewer.cam.elevation = -20  # Set camera elevation
+    
+        self.dt = self.mujoco_model.opt.timestep  # Get simulation timestep
+        self.fps = 1 / self.dt  # Calculate frames per second (FPS)
+
+        # Initialize robot command data with default values
+        self.robot_cmd = datatypes.RobotCmd()
+        self.robot_cmd.mode = [0. for x in range(0, self.actuator_count)]
+        self.robot_cmd.q = [0. for x in range(0, self.actuator_count)]
+        self.robot_cmd.dq = [0. for x in range(0, self.actuator_count)]
+        self.robot_cmd.tau = [0. for x in range(0, self.actuator_count)]
+        self.robot_cmd.Kp = [0. for x in range(0, self.actuator_count)]
+        self.robot_cmd.Kd = [0. for x in range(0, self.actuator_count)]
+
+        # Initialize robot state data with default values
+        self.robot_state = datatypes.RobotState()
+        self.robot_state.tau = [0. for x in range(0, self.actuator_count)]
+        self.robot_state.q = [0. for x in range(0, self.actuator_count)]
+        self.robot_state.dq = [0. for x in range(0, self.actuator_count)]
+        self.robot_state.motor_names = ['' for x in range(0, self.actuator_count)]
+
+        # Initialize IMU data structure
+        self.imu_data = datatypes.ImuData()
+
+        # Set up callback for receiving robot commands in simulation mode
+        self.robotCmdCallbackPartial = partial(self.robotCmdCallback)
+        self.robot.subscribeRobotCmdForSim(self.robotCmdCallbackPartial)
+
+        # 诊断 CSV 日志初始化
+        self._diag_file = open(
+            "mujoco_diag.csv", "w", newline="", buffering=1
+        )
+        self._diag_csv = csv.writer(self._diag_file)
+        self._diag_csv.writerow([
+            "wall_time_s", "monotonic_time_s", "sim_time_s",
+            "base_z", "vx_world", "vx_body", "roll_deg", "pitch_deg",
+            "actuator", "ctrl_requested", "actuator_force",
+            "ctrl_min", "ctrl_max", "ctrl_limited",
+        ])
+        self._diag_next_time = 0.0
+        self._diag_last_sim_time = None
+
+        # 只向本机控制器发送 MuJoCo 时间。
+        self._clock_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._clock_socket.setblocking(False)
+        self._clock_address = ("127.0.0.1", 15171)
+
+        # 从模型结构识别自由基座，不能使用 self.floating_base 判断。
+        m = self.mujoco_model
+        free_ids = np.flatnonzero(m.jnt_type == mujoco.mjtJoint.mjJNT_FREE)
+        if len(free_ids) != 1:
+            raise ValueError("当前诊断要求模型有且只有一个自由基座")
+
+        jid = int(free_ids[0])
+        self._diag_base_qadr = int(m.jnt_qposadr[jid])
+        self._diag_base_vadr = int(m.jnt_dofadr[jid])
+
+        # 只读诊断：真实 MuJoCo PR 关节角度、速度
+        self._pr_joint_names = [
+            "left_ankle_pitch_joint",
+            "left_ankle_roll_joint",
+            "right_ankle_pitch_joint",
+            "right_ankle_roll_joint",
+        ]
+        self._pr_qadr = []
+        self._pr_vadr = []
+
+        for name in self._pr_joint_names:
+            pr_jid = mujoco.mj_name2id(
+                m, mujoco.mjtObj.mjOBJ_JOINT, name
+            )
+            if pr_jid < 0:
+                raise ValueError(f"PR diagnostic joint missing: {name}")
+            if m.jnt_type[pr_jid] != mujoco.mjtJoint.mjJNT_HINGE:
+                raise ValueError(f"PR diagnostic expects hinge: {name}")
+
+            self._pr_qadr.append(int(m.jnt_qposadr[pr_jid]))
+            self._pr_vadr.append(int(m.jnt_dofadr[pr_jid]))
+            print(
+                f"[PR-DIAG] {name}: "
+                f"range={m.jnt_range[pr_jid].tolist()}",
+                flush=True,
+            )
+
+        self._pr_diag_file = open(
+            "ankle_pr_diag.csv", "w", newline="", buffering=1
+        )
+        self._pr_diag_csv = csv.writer(self._pr_diag_file)
+        self._pr_diag_csv.writerow(
+            ["wall_time_s", "monotonic_time_s", "sim_time_s"]
+            + [f"{name}_qpos_rad" for name in self._pr_joint_names]
+            + [f"{name}_qvel_rad_s" for name in self._pr_joint_names]
+            + ["vy_body_mps"]
+        )
+
+    # Callback function for receiving robot command data
+    def robotCmdCallback(self, robot_cmd: datatypes.RobotCmd):
+        self.robot_cmd = robot_cmd
+
+    # Callback for keypress events in the MuJoCo viewer (currently does nothing)
+    def key_callback(self, keycode):
+        pass
+
+    def run(self):
+        frame_count = 0
+        self.rate = Rate(self.fps)  # Set the update rate according to FPS
+        while self.viewer.is_running():    
+            # Step the MuJoCo physics simulation
+            mujoco.mj_step(self.mujoco_model, self.mujoco_data)
+
+            # 诊断日志：记录真实速度、姿态和电机饱和
+            m = self.mujoco_model
+            d = self.mujoco_data
+
+            # 检测仿真时间重置
+            if (
+                self._diag_last_sim_time is not None
+                and float(d.time) < self._diag_last_sim_time - 1e-9
+            ):
+                self._diag_next_time = 0.0
+
+            self._diag_last_sim_time = float(d.time)
+
+            if d.time >= self._diag_next_time:
+                self._diag_next_time = float(d.time) + 0.02
+
+                qa = self._diag_base_qadr
+                va = self._diag_base_vadr
+
+                quat = np.asarray(d.qpos[qa + 3:qa + 7])
+                rotation = Rotation.from_quat(quat[[1, 2, 3, 0]])
+                roll, pitch, yaw = rotation.as_euler("xyz", degrees=True)
+
+                world_vel = np.asarray(d.qvel[va:va + 3])
+                body_vel = rotation.inv().apply(world_vel)
+                base_z = float(d.qpos[qa + 2])
+
+                wall_time = time.time()
+                self._pr_diag_csv.writerow(
+                    [wall_time, time.perf_counter(), float(d.time)]
+                    + [float(d.qpos[a]) for a in self._pr_qadr]
+                    + [float(d.qvel[a]) for a in self._pr_vadr]
+                    + [float(body_vel[1])]
+                )
+                for i in range(m.nu):
+                    name = mujoco.mj_id2name(
+                        m, mujoco.mjtObj.mjOBJ_ACTUATOR, i
+                    )
+                    lo, hi = m.actuator_ctrlrange[i]
+                    self._diag_csv.writerow([
+                        wall_time, time.perf_counter(), float(d.time),
+                        base_z,
+                        float(world_vel[0]), float(body_vel[0]),
+                        float(roll), float(pitch),
+                        name,
+                        float(d.ctrl[i]), float(d.actuator_force[i]),
+                        float(lo), float(hi),
+                        int(m.actuator_ctrllimited[i]),
+                    ])
+
+            if not self.floating_base:
+                # Extract IMU data (orientation, gyro, and acceleration) from simulation
+                self.imu_data.quat[0] = self.mujoco_data.sensordata[0]
+                self.imu_data.quat[1] = self.mujoco_data.sensordata[1]
+                self.imu_data.quat[2] = self.mujoco_data.sensordata[2]
+                self.imu_data.quat[3] = self.mujoco_data.sensordata[3]
+
+                self.imu_data.gyro[0] = self.mujoco_data.sensordata[4]
+                self.imu_data.gyro[1] = self.mujoco_data.sensordata[5]
+                self.imu_data.gyro[2] = self.mujoco_data.sensordata[6]
+
+                # Body-frame linear velocity (policy expects this in "acc" field)
+                vel_world = self.mujoco_data.qvel[0:3].copy()
+                qw, qx, qy, qz = self.imu_data.quat
+                vx, vy, vz = vel_world
+                self.imu_data.acc[0] = (1-2*(qy*qy+qz*qz))*vx + 2*(qx*qy-qw*qz)*vy + 2*(qx*qz+qw*qy)*vz
+                self.imu_data.acc[1] = 2*(qx*qy+qw*qz)*vx + (1-2*(qx*qx+qz*qz))*vy + 2*(qy*qz-qw*qx)*vz
+                self.imu_data.acc[2] = 2*(qx*qz-qw*qy)*vx + 2*(qy*qz+qw*qx)*vy + (1-2*(qx*qx+qy*qy))*vz
+
+                # Set the timestamp for the current IMU data and publish it
+                self.imu_data.stamp = time.time_ns()
+                self.robot.publishImuDataForSim(self.imu_data)
+
+                # Update robot state data from simulation
+                for i in range(self.actuator_count):
+                    self.robot_state.q[i] = self.mujoco_data.sensordata[i + 10]
+                    self.robot_state.dq[i] = self.mujoco_data.sensordata[self.actuator_count + i + 10]
+                    self.robot_state.tau[i] = self.mujoco_data.ctrl[i]
+
+                    # Apply control commands to the robot based on the received robot command data
+                    self.mujoco_data.ctrl[i] = (
+                        self.robot_cmd.Kp[i] * (self.robot_cmd.q[i] - self.robot_state.q[i]) + 
+                        self.robot_cmd.Kd[i] * (self.robot_cmd.dq[i] - self.robot_state.dq[i]) + 
+                        self.robot_cmd.tau[i]
+                    )
+            else:
+                # Update robot state data from simulation
+                for i in range(self.actuator_count):
+                    self.robot_state.q[i] = self.mujoco_data.sensordata[i]
+                    self.robot_state.dq[i] = self.mujoco_data.sensordata[self.actuator_count + i]
+                    self.robot_state.tau[i] = self.mujoco_data.ctrl[i]
+
+                    # Apply control commands to the robot based on the received robot command data
+                    self.mujoco_data.ctrl[i] = (
+                        self.robot_cmd.Kp[i] * (self.robot_cmd.q[i] - self.robot_state.q[i]) + 
+                        self.robot_cmd.Kd[i] * (self.robot_cmd.dq[i] - self.robot_state.dq[i]) + 
+                        self.robot_cmd.tau[i]
+                    )
+        
+            # Set the timestamp for the current robot state and publish it
+            self.robot_state.stamp = time.time_ns()
+            self.robot.publishRobotStateForSim(self.robot_state)
+
+            # 发送仿真时间到控制器
+            try:
+                self._clock_socket.sendto(
+                    struct.pack("!d", float(self.mujoco_data.time)),
+                    self._clock_address,
+                )
+            except BlockingIOError:
+                pass  # 本机 UDP 满时跳过这一包，下一步继续发送。
+
+            # Sync the viewer every 20 frames for smoother visualization
+            if frame_count % 20 == 0:
+                self.viewer.sync()
+
+            frame_count += 1
+            self.rate.sleep()  # Maintain the simulation loop at the correct rate
+
+def run_kinematic_projection():
+    try:
+        # Get the directory where the current Python script is located
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Build the full path of the executable program
+        program_path = os.path.join(current_dir, 'prebuild/kinematic_projection')
+        
+        # Build the full path of the executable program etc
+        program_etc_path = os.path.join(current_dir, 'prebuild/etc')
+
+        # Copy the current environment variables
+        env = os.environ.copy()
+        env['MROS_ETC_PATH'] = program_etc_path
+        env['MROS_LOG_LEVEL'] = "0"
+
+        # Start the executable program and pass in the modified environment variables
+        process = subprocess.Popen(program_path, env=env)
+
+        def cleanup():
+            # When the Python script exits, check if the subprocess is still running
+            if process.poll() is None:
+                print("Trying to terminate the subprocess...")
+                # Send a termination signal to the subprocess
+                process.terminate()
+                try:
+                    # Wait for the subprocess to terminate within 5 seconds
+                    process.wait(timeout=5)
+                    print("The subprocess has been successfully terminated.")
+                except subprocess.TimeoutExpired:
+                    # If it times out, force kill the subprocess
+                    print("The subprocess did not terminate within the specified time, forcing termination...")
+                    process.kill()
+                    print("The subprocess has been force-killed.")
+
+        # Register the cleanup function to ensure it is called when the script exits
+        atexit.register(cleanup)
+        return process
+    except FileNotFoundError:
+        print("Error: The executable program was not found. Please make sure kinematic_projection is in the current directory.")
+    except PermissionError:
+        print("Error: You do not have permission to execute the program.")
+    except Exception as e:
+        print(f"An unknown error occurred: {e}")
+    return None
+
+if __name__ == '__main__': 
+    robot_type = os.getenv("ROBOT_TYPE")
+
+    # Check if the ROBOT_TYPE environment variable is set, otherwise exit with an error
+    if not robot_type:
+        print("Error: Please set the ROBOT_TYPE using 'export ROBOT_TYPE=<robot_type>'.")
+        sys.exit(1)
+        
+    # Split from the right side of ROBOT_TYPE and get the content before the first underscore as the main type
+    main_robot_type = robot_type.rsplit('_', 1)[0]
+
+    # Is floating base
+    floating_base = main_robot_type.startswith(('DA_', 'UB_'))
+
+    # Default IP address for the robot
+    robot_ip = "127.0.0.1"
+    
+    # Check if command-line argument is provided for robot IP
+    if len(sys.argv) > 1:
+        robot_ip = sys.argv[1]
+    
+    ip_parts = robot_ip.split('.')
+    if len(ip_parts) == 4:
+        os.environ["MROS_IP_LIST"] = f"{ip_parts[0]}.{ip_parts[1]}.{ip_parts[2]}.x"
+    else:
+        print(f"ERROR: Invalid IPv4 format ({robot_ip})")
+        sys.exit(1)
+
+    # Create a Robot instance of the Humanoid type
+    robot = Robot(RobotType.Humanoid, True)
+
+    # Initialize the robot with the provided IP address
+    if not robot.init(robot_ip):
+        sys.exit(1)
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Define the path to the robot model XML file based on the robot type
+    model_path = f'{script_dir}/humanoid-description/{main_robot_type}_description/xml/{robot_type}.xml'
+
+    # Check if the model file exists, otherwise exit with an error
+    if not os.path.exists(model_path):
+        print(f"Error: The file {model_path} does not exist. Please ensure the ROBOT_TYPE is set correctly.")
+        sys.exit(1)
+
+    # Run kinematic_projection
+    run_kinematic_projection()
+
+    # Create and run the MuJoCo simulator instance
+    print(f"*** Model File Loaded: humanoid-description/{main_robot_type}_description/xml/{robot_type}.xml ***")
+    simulator = SimulatorMujoco(model_path, robot, floating_base)
+    simulator.run()

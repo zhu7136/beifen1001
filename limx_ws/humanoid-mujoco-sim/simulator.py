@@ -19,6 +19,7 @@ import mujoco
 import mujoco.viewer as viewer
 from functools import partial
 from scipy.spatial.transform import Rotation
+from ankle_chain_diag import AnkleChainDiag
 import limxsdk
 import limxsdk.robot.Rate as Rate
 import limxsdk.robot.Robot as Robot
@@ -105,6 +106,45 @@ class SimulatorMujoco:
         jid = int(free_ids[0])
         self._diag_base_qadr = int(m.jnt_qposadr[jid])
         self._diag_base_vadr = int(m.jnt_dofadr[jid])
+        self._chain_diag = AnkleChainDiag(self.mujoco_model)
+
+        # 只读诊断：真实 MuJoCo PR 关节角度、速度
+        self._pr_joint_names = [
+            "left_ankle_pitch_joint",
+            "left_ankle_roll_joint",
+            "right_ankle_pitch_joint",
+            "right_ankle_roll_joint",
+        ]
+        self._pr_qadr = []
+        self._pr_vadr = []
+
+        for name in self._pr_joint_names:
+            pr_jid = mujoco.mj_name2id(
+                m, mujoco.mjtObj.mjOBJ_JOINT, name
+            )
+            if pr_jid < 0:
+                raise ValueError(f"PR diagnostic joint missing: {name}")
+            if m.jnt_type[pr_jid] != mujoco.mjtJoint.mjJNT_HINGE:
+                raise ValueError(f"PR diagnostic expects hinge: {name}")
+
+            self._pr_qadr.append(int(m.jnt_qposadr[pr_jid]))
+            self._pr_vadr.append(int(m.jnt_dofadr[pr_jid]))
+            print(
+                f"[PR-DIAG] {name}: "
+                f"range={m.jnt_range[pr_jid].tolist()}",
+                flush=True,
+            )
+
+        self._pr_diag_file = open(
+            "ankle_pr_diag.csv", "w", newline="", buffering=1
+        )
+        self._pr_diag_csv = csv.writer(self._pr_diag_file)
+        self._pr_diag_csv.writerow(
+            ["wall_time_s", "monotonic_time_s", "sim_time_s"]
+            + [f"{name}_qpos_rad" for name in self._pr_joint_names]
+            + [f"{name}_qvel_rad_s" for name in self._pr_joint_names]
+            + ["vy_body_mps"]
+        )
 
     # Callback function for receiving robot command data
     def robotCmdCallback(self, robot_cmd: datatypes.RobotCmd):
@@ -149,6 +189,14 @@ class SimulatorMujoco:
                 base_z = float(d.qpos[qa + 2])
 
                 wall_time = time.time()
+                self._chain_diag.write(d, wall_time)
+
+                self._pr_diag_csv.writerow(
+                    [wall_time, time.perf_counter(), float(d.time)]
+                    + [float(d.qpos[a]) for a in self._pr_qadr]
+                    + [float(d.qvel[a]) for a in self._pr_vadr]
+                    + [float(body_vel[1])]
+                )
                 for i in range(m.nu):
                     name = mujoco.mj_id2name(
                         m, mujoco.mjtObj.mjOBJ_ACTUATOR, i

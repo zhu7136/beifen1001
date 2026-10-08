@@ -492,6 +492,8 @@ class LimxSDKPolicyController:
                 "left_ankle_pitch_joint", "right_ankle_pitch_joint",
                 "left_ankle_roll_joint", "right_ankle_roll_joint",
                 "left_hip_pitch_joint", "right_hip_pitch_joint",
+                "left_hip_roll_joint", "right_hip_roll_joint",
+                "waist_yaw_joint", "waist_roll_joint", "waist_pitch_joint",
             ]
             wall_time = time.time()
             for name in watched:
